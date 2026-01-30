@@ -1,13 +1,15 @@
 GIT
   remote: https://github.com/laquereric/llm-engine-gem.git
   revision: 79309c1451115a245b1d7dc52e697fee54e0b340
+  ref: 79309c1
   specs:
     llm_engine (0.1.0)
       rails (>= 7.0)
 
 GIT
   remote: https://github.com/laquereric/magentic-bazaar.git
-  revision: 13f6d5e2553c012c91af525a683fd58a81cbe2f8
+  revision: c7b7c650a9646a282583d0f528b83fded72fef9c
+  ref: c7b7c65
   specs:
     magentic-bazaar (0.1.0)
       activejob (>= 7.0)
@@ -20,6 +22,7 @@ GIT
 GIT
   remote: https://github.com/laquereric/rails-multistore.git
   revision: 24129f592bf064f2b398323e1f53082aa1ed62c7
+  ref: 24129f5
   specs:
     rails-multistore (0.1.0)
       activejob (>= 7.0)
