@@ -18,6 +18,15 @@ Rails.application.routes.draw do
     resource :configuration, only: [ :show, :update ]
     resources :users, only: [ :index, :update ]
     resource :system_status, only: [ :show ], path: "status"
+
+    resource :llm, only: [ :show ], controller: "llm" do
+      post :seed, on: :member
+    end
+    resources :llm_providers do
+      post :test, on: :member
+      resources :llm_model_configurations, only: [ :new, :create ]
+    end
+    resources :llm_model_configurations, only: [ :edit, :update, :destroy ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
