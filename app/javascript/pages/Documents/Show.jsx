@@ -56,6 +56,9 @@ function CopyButton({ text, label = 'Copy' }) {
 }
 
 export default function DocumentsShow({ document, skill, uml_diagram, mdx }) {
+  const hasRendered = mdx && mdx.compiled_source
+  const [tab, setTab] = React.useState(hasRendered ? 'rendered' : 'raw')
+
   const wordCount = document.word_count ? document.word_count.toLocaleString() : '0'
   const createdAt = new Date(document.created_at).toLocaleDateString('en-US', {
     year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit'
@@ -75,102 +78,76 @@ export default function DocumentsShow({ document, skill, uml_diagram, mdx }) {
           <FileTypeBadge fileType={document.file_type} />
           <StatusBadge status={document.status} />
           <span className="text-sm text-gray-500">{wordCount} words</span>
+          {skill && (
+            <a href={`/skills/${skill.id}`} className="text-sm text-indigo-600 hover:text-indigo-900">Skill</a>
+          )}
+          {uml_diagram && (
+            <a href={`/uml_diagrams/${uml_diagram.id}`} className="text-sm text-indigo-600 hover:text-indigo-900">UML</a>
+          )}
         </div>
       </div>
 
-      {mdx && mdx.compiled_source ? (
-        <div className="bg-white shadow rounded-lg p-6">
-          <MdxRenderer compiledSource={mdx.compiled_source} frontmatter={mdx.frontmatter} />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Metadata</h2>
+          </div>
+          <dl className="divide-y divide-gray-200">
+            <MetadataRow label="Filename" value={document.original_filename} />
+            <MetadataRow label="UUID" value={document.uuid7} mono />
+            <MetadataRow label="Git SHA" value={document.git_sha} mono />
+            <MetadataRow label="Content Hash" value={document.content_hash} mono />
+            <MetadataRow label="Source Path" value={document.source_path} />
+            <MetadataRow label="Created" value={createdAt} />
+          </dl>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Metadata Panel */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Metadata</h2>
-            </div>
-            <dl className="divide-y divide-gray-200">
-              <MetadataRow label="Filename" value={document.original_filename} />
-              <MetadataRow label="UUID" value={document.uuid7} mono />
-              <MetadataRow label="Git SHA" value={document.git_sha} mono />
-              <MetadataRow label="Content Hash" value={document.content_hash} mono />
-              <MetadataRow label="Source Path" value={document.source_path} />
-              <MetadataRow label="Created" value={createdAt} />
-            </dl>
-          </div>
 
-          {/* UML Diagram Panel */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">UML Diagram</h2>
-            </div>
-            <div className="p-6">
-              {uml_diagram ? (
-                <>
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">{uml_diagram.diagram_type}</span>
-                    <CopyButton text={uml_diagram.puml_content} label="Copy PlantUML" />
-                  </div>
-                  {uml_diagram.title && (
-                    <p className="text-sm text-gray-600 mb-3">{uml_diagram.title}</p>
-                  )}
-                  <pre className="bg-gray-50 rounded-md p-4 text-xs overflow-x-auto font-mono">
-                    {uml_diagram.puml_content}
-                  </pre>
-                </>
-              ) : (
-                <p className="text-sm text-gray-500 text-center py-4">No UML diagram generated.</p>
-              )}
-            </div>
+        {/* Content */}
+        <div className="lg:col-span-3 bg-white shadow rounded-lg">
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                onClick={() => setTab('rendered')}
+                className={`px-6 py-3 text-sm font-medium border-b-2 ${
+                  tab === 'rendered'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Rendered
+              </button>
+              <button
+                onClick={() => setTab('raw')}
+                className={`px-6 py-3 text-sm font-medium border-b-2 ${
+                  tab === 'raw'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Raw
+              </button>
+            </nav>
           </div>
-
-          {/* Skill Summary Panel */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Skill Summary</h2>
-            </div>
-            <div className="p-6">
-              {skill ? (
-                <>
-                  <dl className="space-y-3 mb-4">
-                    <div>
-                      <dt className="text-xs font-medium text-gray-500 uppercase">Name</dt>
-                      <dd className="text-sm text-gray-900">{skill.name}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-medium text-gray-500 uppercase">Category</dt>
-                      <dd className="text-sm text-gray-900">{skill.category}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-medium text-gray-500 uppercase">Version</dt>
-                      <dd className="text-sm text-gray-900">{skill.version}</dd>
-                    </div>
-                    <div className="flex gap-4">
-                      <div>
-                        <dt className="text-xs font-medium text-gray-500 uppercase">Sections</dt>
-                        <dd className="text-sm text-gray-900">{skill.section_count}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-xs font-medium text-gray-500 uppercase">Key Points</dt>
-                        <dd className="text-sm text-gray-900">{skill.key_point_count}</dd>
-                      </div>
-                    </div>
-                  </dl>
-                  {skill.content && (
-                    <div className="prose prose-sm max-w-none">
-                      <pre className="bg-gray-50 rounded-md p-4 text-xs overflow-x-auto whitespace-pre-wrap">
-                        {skill.content}
-                      </pre>
-                    </div>
-                  )}
-                </>
+          <div className="p-6">
+            {tab === 'rendered' ? (
+              hasRendered ? (
+                <MdxRenderer compiledSource={mdx.compiled_source} frontmatter={mdx.frontmatter} />
               ) : (
-                <p className="text-sm text-gray-500 text-center py-4">No skill generated.</p>
-              )}
-            </div>
+                <p className="text-sm text-gray-500 text-center py-4">No rendered content available.</p>
+              )
+            ) : (
+              document.raw_content ? (
+                <pre className="bg-gray-50 rounded-md p-6 text-sm overflow-x-auto whitespace-pre-wrap font-mono">
+                  {document.raw_content}
+                </pre>
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">No content available.</p>
+              )
+            )}
           </div>
         </div>
-      )}
+      </div>
     </>
   )
 }

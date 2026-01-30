@@ -26,9 +26,12 @@ class DocumentsController < ApplicationController
       uml_diagram: @uml_diagram ? serialize_uml_diagram(@uml_diagram) : nil
     }
 
+    compiler = RailsInertiaMdx::Compiler.new
     if mdx_path
-      compiler = RailsInertiaMdx::Compiler.new
       compiled = compiler.compile_file(mdx_path)
+      props[:mdx] = compiled.to_inertia_props[:mdx]
+    elsif @document.raw_content.present?
+      compiled = compiler.compile(@document.raw_content)
       props[:mdx] = compiled.to_inertia_props[:mdx]
     end
 
@@ -47,6 +50,7 @@ class DocumentsController < ApplicationController
       file_type: doc.file_type,
       content_hash: doc.content_hash,
       word_count: doc.word_count,
+      raw_content: doc.raw_content,
       source_path: doc.source_path,
       status: doc.status,
       created_at: doc.created_at.iso8601

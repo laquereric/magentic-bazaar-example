@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import MdxRenderer from '../../components/MdxRenderer'
 
 function CopyButton({ text, label = 'Copy to Clipboard' }) {
   const [copied, setCopied] = useState(false)
@@ -19,8 +20,9 @@ function CopyButton({ text, label = 'Copy to Clipboard' }) {
   )
 }
 
-export default function UmlDiagramsShow({ uml_diagram, document }) {
-  const [fontSize, setFontSize] = useState(14)
+export default function UmlDiagramsShow({ uml_diagram, document, mdx }) {
+  const hasRendered = mdx && mdx.compiled_source
+  const [tab, setTab] = useState(hasRendered ? 'rendered' : 'raw')
 
   return (
     <>
@@ -52,36 +54,45 @@ export default function UmlDiagramsShow({ uml_diagram, document }) {
       </div>
 
       <div className="bg-white shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-medium text-gray-900">PlantUML Source</h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setFontSize(s => Math.max(10, s - 2))}
-                className="text-sm text-gray-500 hover:text-gray-700 px-1"
-                title="Decrease font size"
-              >
-                A-
-              </button>
-              <span className="text-xs text-gray-400">{fontSize}px</span>
-              <button
-                onClick={() => setFontSize(s => Math.min(24, s + 2))}
-                className="text-sm text-gray-500 hover:text-gray-700 px-1"
-                title="Increase font size"
-              >
-                A+
-              </button>
-            </div>
+        <div className="border-b border-gray-200 flex items-center justify-between">
+          <nav className="flex -mb-px">
+            <button
+              onClick={() => setTab('rendered')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 ${
+                tab === 'rendered'
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Rendered
+            </button>
+            <button
+              onClick={() => setTab('raw')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 ${
+                tab === 'raw'
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Raw
+            </button>
+          </nav>
+          <div className="pr-4">
             <CopyButton text={uml_diagram.puml_content} />
           </div>
         </div>
         <div className="p-6">
-          <pre
-            className="bg-gray-50 rounded-md p-6 overflow-x-auto font-mono whitespace-pre-wrap"
-            style={{ fontSize: `${fontSize}px` }}
-          >
-            {uml_diagram.puml_content}
-          </pre>
+          {tab === 'rendered' ? (
+            hasRendered ? (
+              <MdxRenderer compiledSource={mdx.compiled_source} frontmatter={mdx.frontmatter} />
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-4">No rendered content available.</p>
+            )
+          ) : (
+            <pre className="bg-gray-50 rounded-md p-6 text-sm overflow-x-auto font-mono whitespace-pre-wrap">
+              {uml_diagram.puml_content}
+            </pre>
+          )}
         </div>
       </div>
     </>

@@ -13,10 +13,30 @@ class UmlDiagramsController < ApplicationController
     @uml_diagram = MagenticBazaar::UmlDiagram.find(params[:id])
     @document = @uml_diagram.document
 
-    render inertia: "UmlDiagrams/Show", props: {
+    mdx_path = find_mdx_file(
+      MagenticBazaar.configuration.uml_dir,
+      @document&.uuid7
+    )
+
+    props = {
       uml_diagram: serialize_uml_diagram(@uml_diagram),
       document: @document ? serialize_document(@document) : nil
     }
+
+    compiler = RailsInertiaMdx::Compiler.new
+    if mdx_path
+      compiled = compiler.compile_file(mdx_path)
+      props[:mdx] = compiled.to_inertia_props[:mdx]
+    elsif @uml_diagram.puml_content.present?
+      md = "# #{@uml_diagram.title || 'UML Diagram'}\n\n" \
+           "**Type:** #{@uml_diagram.diagram_type}" \
+           "#{@uml_diagram.subtype.present? ? " (#{@uml_diagram.subtype})" : ""}\n\n" \
+           "```plantuml\n#{@uml_diagram.puml_content}\n```\n"
+      compiled = compiler.compile(md)
+      props[:mdx] = compiled.to_inertia_props[:mdx]
+    end
+
+    render inertia: "UmlDiagrams/Show", props: props
   end
 
   private

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
-import * as runtime from 'react/jsx-runtime'
-import { getMDXComponent } from 'mdx-bundler/client'
+import * as jsxRuntime from 'react/jsx-runtime'
 import UMLPreview from './mdx/UMLPreview'
 import CollapsibleSection from './mdx/CollapsibleSection'
 import TableOfContents from './mdx/TableOfContents'
@@ -17,7 +16,9 @@ export default function MdxRenderer({ compiledSource, frontmatter = {} }) {
   const Component = useMemo(() => {
     if (!compiledSource) return null
     try {
-      return getMDXComponent(compiledSource)
+      const fn = new Function(compiledSource)
+      const { default: MDXContent } = fn(jsxRuntime)
+      return MDXContent
     } catch (error) {
       console.error('Failed to render MDX:', error)
       return null

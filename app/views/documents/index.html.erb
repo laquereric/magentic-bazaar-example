@@ -38,7 +38,7 @@
         <% @documents.each do |doc| %>
           <tr class="hover:bg-gray-50">
             <td class="px-6 py-4">
-              <%= link_to doc.title, document_path(doc), class: "text-sm font-medium text-indigo-600 hover:text-indigo-900" %>
+              <%= link_to doc.title, document_path(doc), class: "text-sm font-medium text-indigo-600 hover:text-indigo-900", data: { turbo_frame: "_top" } %>
               <div class="text-xs text-gray-400"><%= doc.original_filename %></div>
             </td>
             <td class="px-6 py-4"><%= file_type_badge(doc.file_type) %></td>

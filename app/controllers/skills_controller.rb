@@ -25,9 +25,12 @@ class SkillsController < ApplicationController
       document: @document ? serialize_document(@document) : nil
     }
 
+    compiler = RailsInertiaMdx::Compiler.new
     if mdx_path
-      compiler = RailsInertiaMdx::Compiler.new
       compiled = compiler.compile_file(mdx_path)
+      props[:mdx] = compiled.to_inertia_props[:mdx]
+    elsif @skill.content.present?
+      compiled = compiler.compile(@skill.content)
       props[:mdx] = compiled.to_inertia_props[:mdx]
     end
 
