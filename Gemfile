@@ -33,6 +33,7 @@ gem "rails-inertia-mdx", path: "../rails-inertia-mdx", require: "rails_inertia_m
 
 # LLM provider engine — unified interface to multiple LLM providers
 gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git"
+gem "anthropic"
 
 # Pagination
 gem "pagy"
