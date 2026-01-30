@@ -21,6 +21,7 @@ class UploadsController < ApplicationController
       saved += 1
     end
 
-    redirect_to new_upload_path, notice: "#{saved} file(s) uploaded to ingest directory."
+    MagenticBazaar::IngestJob.perform_later(direction: "forward")
+    redirect_to new_upload_path, notice: "#{saved} file(s) uploaded. Ingestion has been queued."
   end
 end
