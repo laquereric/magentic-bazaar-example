@@ -39,3 +39,6 @@
 
 # Local engine clone for development
 /temp_clone/
+
+# Node modules
+/node_modules/
