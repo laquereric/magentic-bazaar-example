@@ -40,8 +40,8 @@ GIT
 
 GIT
   remote: https://github.com/laquereric/magentic-bazaar.git
-  revision: 86cf9cd2d6741fe40ec0f0ac919a967a786645fd
-  ref: 86cf9cd
+  revision: 106220cda971de37cad1ba128ed163d5bbfede92
+  ref: 106220c
   specs:
     magentic-bazaar (0.1.0)
       activejob (>= 7.0)

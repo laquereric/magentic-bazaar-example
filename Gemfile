@@ -25,7 +25,7 @@ gem "tailwindcss-rails"
 gem "bcrypt", "~> 3.1.7"
 
 # MagenticBazaar document ingestion engine
-gem "magentic-bazaar", git: "https://github.com/laquereric/magentic-bazaar.git", ref: "86cf9cd", require: "magentic_bazaar"
+gem "magentic-bazaar", git: "https://github.com/laquereric/magentic-bazaar.git", ref: "106220c", require: "magentic_bazaar"
 gem "rails-multistore", git: "https://github.com/laquereric/rails-multistore.git", ref: "24129f5", require: "rails_multistore"
 
 # MDX compilation and rendering for Inertia.js pages
