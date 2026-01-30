@@ -1,0 +1,35 @@
+<% content_for(:title, "Upload Files - MagenticBazaar") %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Upload Files</h1>
+  <p class="mt-1 text-sm text-gray-500">Upload documents to the ingest directory for processing</p>
+</div>
+
+<div class="bg-white shadow rounded-lg p-8">
+  <%= form_tag uploads_path, multipart: true, data: { controller: "file-upload" } do %>
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-indigo-400 transition-colors"
+         data-file-upload-target="dropzone"
+         data-action="dragover->file-upload#dragover dragenter->file-upload#dragover dragleave->file-upload#dragleave drop->file-upload#drop">
+      <div data-file-upload-target="placeholder">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+        </svg>
+        <p class="mt-4 text-sm text-gray-600">Drag and drop files here, or</p>
+        <label class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+          Browse files
+          <%= file_field_tag :files, multiple: true, class: "sr-only", accept: ".md,.pdf,.jpg,.jpeg,.png", data: { file_upload_target: "input", action: "change->file-upload#select" } %>
+        </label>
+        <p class="mt-2 text-xs text-gray-400">Supported: Markdown (.md), PDF (.pdf), Images (.jpg, .jpeg, .png)</p>
+      </div>
+
+      <!-- File Preview -->
+      <div data-file-upload-target="preview" class="hidden">
+        <div data-file-upload-target="fileList" class="space-y-2 text-left"></div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end">
+      <%= submit_tag "Upload Files", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

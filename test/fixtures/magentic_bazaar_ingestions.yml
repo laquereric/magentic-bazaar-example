@@ -1,0 +1,12 @@
+completed_ingestion:
+  direction: forward
+  status: completed
+  documents_count: 1
+  documents_processed: 1
+  git_sha: abc1234
+
+running_ingestion:
+  direction: forward
+  status: running
+  documents_count: 2
+  documents_processed: 1

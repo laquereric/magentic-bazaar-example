@@ -1,0 +1,118 @@
+<% content_for(:title, "Admin Dashboard - MagenticBazaar") %>
+
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+  <p class="mt-1 text-sm text-gray-500">System overview and quick actions</p>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mb-8">
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Documents</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @document_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Ingestions</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @ingestion_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Skills</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @skill_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">UML Diagrams</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @uml_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Pending Files</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @pending_files %></div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-lg font-medium text-gray-900">Quick Actions</h2>
+    </div>
+    <div class="p-6 space-y-3">
+      <%= button_to "Run Ingestion", admin_ingestions_path, method: :post, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700" %>
+      <%= link_to "Upload Files", new_upload_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+      <%= link_to "View Configuration", admin_configuration_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+    </div>
+  </div>
+
+  <!-- Running Ingestions -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Active Ingestions</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @running_ingestions.any? %>
+        <% @running_ingestions.each do |ingestion| %>
+          <div class="px-6 py-4" data-controller="auto-refresh" data-auto-refresh-url-value="<%= admin_ingestion_path(ingestion) %>" data-auto-refresh-interval-value="3000">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium"><%= ingestion.direction.capitalize %></span>
+              <%= status_badge(ingestion.status) %>
+            </div>
+            <div class="mt-2">
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <% progress = ingestion.documents_count > 0 ? (ingestion.documents_processed.to_f / ingestion.documents_count * 100).round : 0 %>
+                <div class="bg-indigo-600 h-2 rounded-full transition-all" style="width: <%= progress %>%"></div>
+              </div>
+              <p class="mt-1 text-xs text-gray-500"><%= ingestion.documents_processed %>/<%= ingestion.documents_count %> documents</p>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-8 text-center text-sm text-gray-500">No active ingestions.</div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Ingestions Table -->
+<div class="mt-8 bg-white shadow rounded-lg">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-medium text-gray-900">Recent Ingestions</h2>
+  </div>
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Direction</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Progress</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+        <th class="px-6 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <% @recent_ingestions.each do |ingestion| %>
+        <tr>
+          <td class="px-6 py-4 text-sm text-gray-900">#<%= ingestion.id %></td>
+          <td class="px-6 py-4 text-sm"><%= ingestion.direction.capitalize %></td>
+          <td class="px-6 py-4"><%= status_badge(ingestion.status) %></td>
+          <td class="px-6 py-4 text-sm text-gray-500"><%= ingestion.documents_processed %>/<%= ingestion.documents_count %></td>
+          <td class="px-6 py-4 text-sm text-gray-500"><%= time_ago_in_words(ingestion.created_at) %> ago</td>
+          <td class="px-6 py-4 text-right">
+            <%= link_to "View", admin_ingestion_path(ingestion), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @recent_ingestions.empty? %>
+        <tr><td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">No ingestions yet.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

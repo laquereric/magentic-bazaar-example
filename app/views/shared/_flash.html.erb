@@ -1,0 +1,9 @@
+<% flash.each do |type, message| %>
+  <% css = type == "alert" ? "bg-red-50 text-red-800 border-red-200" : "bg-green-50 text-green-800 border-green-200" %>
+  <div class="border-b <%= css %> px-4 py-3 text-sm" data-controller="auto-dismiss" data-auto-dismiss-delay-value="5000">
+    <div class="mx-auto max-w-7xl flex items-center justify-between">
+      <span><%= message %></span>
+      <button type="button" data-action="click->auto-dismiss#dismiss" class="text-current opacity-50 hover:opacity-100">&times;</button>
+    </div>
+  </div>
+<% end %>

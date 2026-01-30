@@ -1,0 +1,11 @@
+<% if pagy.pages > 1 %>
+  <nav class="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-0 mt-6">
+    <div class="text-sm text-gray-700">
+      Showing <span class="font-medium"><%= pagy.from %></span> to <span class="font-medium"><%= pagy.to %></span>
+      of <span class="font-medium"><%= pagy.count %></span> results
+    </div>
+    <div>
+      <%== pagy.nav %>
+    </div>
+  </nav>
+<% end %>

@@ -1,0 +1,61 @@
+<% content_for(:title, "Skills - MagenticBazaar") %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Skills</h1>
+  <p class="mt-1 text-sm text-gray-500">Browse generated technical skills</p>
+</div>
+
+<!-- Filters -->
+<div class="mb-6 flex flex-wrap gap-4">
+  <div>
+    <%= form_tag skills_path, method: :get, data: { controller: "filter" } do %>
+      <%= select_tag :category, options_for_select([["All Categories", ""]] + @categories.map { |c| [c, c] }, params[:category]), class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", data: { action: "change->filter#submit" } %>
+      <% if params[:uml_type].present? %>
+        <%= hidden_field_tag :uml_type, params[:uml_type] %>
+      <% end %>
+    <% end %>
+  </div>
+  <div>
+    <%= form_tag skills_path, method: :get, data: { controller: "filter" } do %>
+      <%= select_tag :uml_type, options_for_select([["All UML Types", ""]] + @uml_types.map { |t| [t, t] }, params[:uml_type]), class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", data: { action: "change->filter#submit" } %>
+      <% if params[:category].present? %>
+        <%= hidden_field_tag :category, params[:category] %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<!-- Skills Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <% @skills.each do |skill| %>
+    <%= link_to skill_path(skill), class: "block bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition-shadow" do %>
+      <div class="p-6">
+        <h3 class="text-sm font-semibold text-gray-900 mb-2"><%= skill.name %></h3>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <span class="inline-flex items-center rounded-full bg-purple-100 text-purple-800 px-2 py-0.5 text-xs font-medium"><%= skill.category %></span>
+          <% if skill.uml_type.present? %>
+            <span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 px-2 py-0.5 text-xs font-medium"><%= skill.uml_type %></span>
+          <% end %>
+          <span class="inline-flex items-center rounded-full bg-gray-100 text-gray-600 px-2 py-0.5 text-xs">v<%= skill.version %></span>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-gray-500">
+          <span><%= skill.section_count %> sections</span>
+          <span><%= skill.key_point_count %> key points</span>
+          <% if skill.has_code? %><span class="text-green-600">Has code</span><% end %>
+          <% if skill.has_diagrams? %><span class="text-blue-600">Has diagrams</span><% end %>
+        </div>
+        <div class="mt-3 text-xs text-gray-400">
+          From: <%= skill.document.title %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @skills.empty? %>
+  <div class="text-center py-12 bg-white rounded-lg shadow">
+    <p class="text-gray-500">No skills found.</p>
+  </div>
+<% end %>
+
+<%= render "shared/pagination", pagy: @pagy %>

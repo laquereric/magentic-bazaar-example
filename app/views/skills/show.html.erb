@@ -1,0 +1,64 @@
+<% content_for(:title, "#{@skill.name} - MagenticBazaar") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Skills".html_safe, skills_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900"><%= @skill.name %></h1>
+  <div class="mt-2 flex flex-wrap items-center gap-3">
+    <span class="inline-flex items-center rounded-full bg-purple-100 text-purple-800 px-2.5 py-0.5 text-xs font-medium"><%= @skill.category %></span>
+    <% if @skill.uml_type.present? %>
+      <span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 px-2.5 py-0.5 text-xs font-medium"><%= @skill.uml_type %></span>
+    <% end %>
+    <span class="text-sm text-gray-500">v<%= @skill.version %></span>
+    <span class="text-sm text-gray-500">From: <%= link_to @document.title, document_path(@document), class: "text-indigo-600 hover:text-indigo-900" %></span>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <!-- Sidebar -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Details</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Sections</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @skill.section_count %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Key Points</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @skill.key_point_count %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Has Code</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @skill.has_code? ? "Yes" : "No" %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Has Diagrams</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @skill.has_diagrams? ? "Yes" : "No" %></dd>
+      </div>
+      <% if @skill.output_path.present? %>
+        <div class="px-6 py-3">
+          <dt class="text-xs font-medium text-gray-500 uppercase">Output Path</dt>
+          <dd class="mt-1 text-sm text-gray-900 break-all"><%= @skill.output_path %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <!-- Content -->
+  <div class="lg:col-span-3 bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Content</h2>
+    </div>
+    <div class="p-6">
+      <% if @skill.content.present? %>
+        <pre class="bg-gray-50 rounded-md p-6 text-sm overflow-x-auto whitespace-pre-wrap font-mono"><%= @skill.content %></pre>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">No content available.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

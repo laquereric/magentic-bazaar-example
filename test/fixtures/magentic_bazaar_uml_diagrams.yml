@@ -1,0 +1,6 @@
+sample_uml:
+  diagram_type: class
+  subtype: analysis
+  title: Sample Class Diagram
+  puml_content: "@startuml\nclass Sample\n@enduml"
+  document_id: <%= ActiveRecord::FixtureSet.identify(:sample_doc) %>

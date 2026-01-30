@@ -1,0 +1,28 @@
+<% content_for(:title, "#{@uml_diagram.title || 'UML Diagram'} - MagenticBazaar") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to UML Diagrams".html_safe, uml_diagrams_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900"><%= @uml_diagram.title || "Untitled Diagram" %></h1>
+  <div class="mt-2 flex items-center gap-3">
+    <span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 px-2.5 py-0.5 text-xs font-medium"><%= @uml_diagram.diagram_type %></span>
+    <% if @uml_diagram.subtype.present? %>
+      <span class="inline-flex items-center rounded-full bg-gray-100 text-gray-800 px-2.5 py-0.5 text-xs font-medium"><%= @uml_diagram.subtype %></span>
+    <% end %>
+    <span class="text-sm text-gray-500">From: <%= link_to @document.title, document_path(@document), class: "text-indigo-600 hover:text-indigo-900" %></span>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded-lg">
+  <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+    <h2 class="text-lg font-medium text-gray-900">PlantUML Source</h2>
+    <button data-controller="clipboard" data-clipboard-text-value="<%= @uml_diagram.puml_content %>" data-action="click->clipboard#copy" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-900">
+      Copy to Clipboard
+    </button>
+  </div>
+  <div class="p-6">
+    <pre class="bg-gray-50 rounded-md p-6 text-sm overflow-x-auto font-mono whitespace-pre-wrap"><%= @uml_diagram.puml_content %></pre>
+  </div>
+</div>

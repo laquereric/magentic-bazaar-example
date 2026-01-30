@@ -1,0 +1,11 @@
+sample_skill:
+  name: Sample Skill
+  category: Documentation Analysis
+  version: "1.0.0"
+  uml_type: class
+  section_count: 3
+  key_point_count: 5
+  has_code: false
+  has_diagrams: true
+  content: "Sample skill content."
+  document_id: <%= ActiveRecord::FixtureSet.identify(:sample_doc) %>

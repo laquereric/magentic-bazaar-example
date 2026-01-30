@@ -1,0 +1,49 @@
+<% content_for(:title, "UML Diagrams - MagenticBazaar") %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">UML Diagrams</h1>
+  <p class="mt-1 text-sm text-gray-500">Gallery of generated UML diagrams</p>
+</div>
+
+<!-- Type Filter -->
+<div class="mb-6">
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "All", uml_diagrams_path, class: "inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium #{params[:type].blank? ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+    <% @diagram_types.each do |type| %>
+      <%= link_to type, uml_diagrams_path(type: type), class: "inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium #{params[:type] == type ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+    <% end %>
+  </div>
+</div>
+
+<!-- Diagram Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <% @uml_diagrams.each do |diagram| %>
+    <div class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+      <%= link_to uml_diagram_path(diagram), class: "block" do %>
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 px-2.5 py-0.5 text-xs font-medium">
+              <%= diagram.diagram_type %>
+            </span>
+            <% if diagram.subtype.present? %>
+              <span class="text-xs text-gray-400"><%= diagram.subtype %></span>
+            <% end %>
+          </div>
+          <h3 class="text-sm font-medium text-gray-900 mb-2"><%= diagram.title || "Untitled Diagram" %></h3>
+          <pre class="bg-gray-50 rounded p-3 text-xs text-gray-600 overflow-hidden max-h-32 font-mono"><%= truncate(diagram.puml_content, length: 200) %></pre>
+          <div class="mt-3 text-xs text-gray-400">
+            From: <%= diagram.document.title %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<% if @uml_diagrams.empty? %>
+  <div class="text-center py-12 bg-white rounded-lg shadow">
+    <p class="text-gray-500">No UML diagrams found.</p>
+  </div>
+<% end %>
+
+<%= render "shared/pagination", pagy: @pagy %>

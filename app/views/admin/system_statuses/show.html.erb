@@ -1,0 +1,68 @@
+<% content_for(:title, "System Status - Admin - MagenticBazaar") %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">System Status</h1>
+  <p class="mt-1 text-sm text-gray-500">Directory, database, and queue statistics</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Directory Stats -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Directories</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% @directory_stats.each do |name, stats| %>
+        <div class="px-6 py-4">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-900 capitalize"><%= name %></span>
+            <% if stats[:exists] %>
+              <span class="inline-flex items-center rounded-full bg-green-100 text-green-800 px-2 py-0.5 text-xs font-medium">Active</span>
+            <% else %>
+              <span class="inline-flex items-center rounded-full bg-red-100 text-red-800 px-2 py-0.5 text-xs font-medium">Missing</span>
+            <% end %>
+          </div>
+          <div class="mt-1 text-xs text-gray-500">
+            <%= stats[:files] %> files &middot; <%= stats[:size] %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Database Stats -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Database</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% @db_stats.each do |table, count| %>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-700 capitalize"><%= table.to_s.gsub('_', ' ') %></span>
+          <span class="text-sm font-semibold text-gray-900"><%= number_with_delimiter(count) %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Queue Stats -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Queue</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @queue_stats[:error] %>
+        <div class="px-6 py-4 text-sm text-red-600"><%= @queue_stats[:error] %></div>
+      <% else %>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-700">Pending Jobs</span>
+          <span class="text-sm font-semibold text-gray-900"><%= @queue_stats[:pending] %></span>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-700">Completed Jobs</span>
+          <span class="text-sm font-semibold text-gray-900"><%= @queue_stats[:completed] %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

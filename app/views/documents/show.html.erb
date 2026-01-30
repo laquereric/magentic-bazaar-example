@@ -1,0 +1,114 @@
+<% content_for(:title, "#{@document.title} - MagenticBazaar") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Documents".html_safe, documents_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900"><%= @document.title %></h1>
+  <div class="mt-2 flex items-center gap-3">
+    <%= file_type_badge(@document.file_type) %>
+    <%= status_badge(@document.status) %>
+    <span class="text-sm text-gray-500"><%= number_with_delimiter(@document.word_count) %> words</span>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Metadata Panel -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Metadata</h2>
+    </div>
+    <dl class="divide-y divide-gray-200">
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Filename</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @document.original_filename %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">UUID</dt>
+        <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @document.uuid7 %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Git SHA</dt>
+        <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @document.git_sha || "N/A" %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Content Hash</dt>
+        <dd class="mt-1 text-sm text-gray-900 font-mono text-xs break-all"><%= @document.content_hash || "N/A" %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Source Path</dt>
+        <dd class="mt-1 text-sm text-gray-900 break-all"><%= @document.source_path || "N/A" %></dd>
+      </div>
+      <div class="px-6 py-3">
+        <dt class="text-xs font-medium text-gray-500 uppercase">Created</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @document.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- UML Diagram Panel -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">UML Diagram</h2>
+    </div>
+    <div class="p-6">
+      <% if @uml_diagram %>
+        <div class="mb-3 flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-700"><%= @uml_diagram.diagram_type %></span>
+          <button data-controller="clipboard" data-clipboard-text-value="<%= @uml_diagram.puml_content %>" data-action="click->clipboard#copy" class="text-xs text-indigo-600 hover:text-indigo-900">
+            Copy PlantUML
+          </button>
+        </div>
+        <% if @uml_diagram.title.present? %>
+          <p class="text-sm text-gray-600 mb-3"><%= @uml_diagram.title %></p>
+        <% end %>
+        <pre class="bg-gray-50 rounded-md p-4 text-xs overflow-x-auto font-mono"><%= @uml_diagram.puml_content %></pre>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">No UML diagram generated.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Skill Summary Panel -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Skill Summary</h2>
+    </div>
+    <div class="p-6">
+      <% if @skill %>
+        <dl class="space-y-3 mb-4">
+          <div>
+            <dt class="text-xs font-medium text-gray-500 uppercase">Name</dt>
+            <dd class="text-sm text-gray-900"><%= @skill.name %></dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium text-gray-500 uppercase">Category</dt>
+            <dd class="text-sm text-gray-900"><%= @skill.category %></dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium text-gray-500 uppercase">Version</dt>
+            <dd class="text-sm text-gray-900"><%= @skill.version %></dd>
+          </div>
+          <div class="flex gap-4">
+            <div>
+              <dt class="text-xs font-medium text-gray-500 uppercase">Sections</dt>
+              <dd class="text-sm text-gray-900"><%= @skill.section_count %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium text-gray-500 uppercase">Key Points</dt>
+              <dd class="text-sm text-gray-900"><%= @skill.key_point_count %></dd>
+            </div>
+          </div>
+        </dl>
+        <% if @skill.content.present? %>
+          <div class="prose prose-sm max-w-none">
+            <pre class="bg-gray-50 rounded-md p-4 text-xs overflow-x-auto whitespace-pre-wrap"><%= @skill.content %></pre>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">No skill generated.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

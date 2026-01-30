@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-50">
+  <head>
+    <title><%= content_for(:title) || "Admin - MagenticBazaar" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full">
+    <div class="flex h-full">
+      <!-- Sidebar -->
+      <div class="flex w-64 flex-col bg-indigo-800">
+        <div class="flex h-16 items-center px-6">
+          <%= link_to admin_root_path, class: "text-white text-lg font-bold" do %>
+            MagenticBazaar Admin
+          <% end %>
+        </div>
+        <nav class="flex-1 space-y-1 px-3 py-4">
+          <%= nav_link "Dashboard", admin_root_path %>
+          <%= nav_link "Ingestions", admin_ingestions_path %>
+          <%= nav_link "Configuration", admin_configuration_path %>
+          <%= nav_link "Users", admin_users_path %>
+          <%= nav_link "System Status", admin_system_status_path %>
+          <hr class="my-4 border-indigo-600">
+          <%= nav_link "Back to App", root_path %>
+        </nav>
+        <div class="p-4 border-t border-indigo-600">
+          <p class="text-indigo-200 text-xs"><%= current_user&.email_address %></p>
+          <%= button_to "Sign out", session_path, method: :delete, class: "text-indigo-300 hover:text-white text-xs mt-1" %>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="flex-1 overflow-auto">
+        <%= render "shared/flash" %>
+        <main class="p-8">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

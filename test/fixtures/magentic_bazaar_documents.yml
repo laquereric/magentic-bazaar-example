@@ -1,0 +1,9 @@
+sample_doc:
+  title: Sample Document
+  original_filename: sample.md
+  uuid7: abc1234
+  file_type: Markdown
+  status: ingested
+  word_count: 500
+  raw_content: "This is sample content."
+  ingestion_id: <%= ActiveRecord::FixtureSet.identify(:completed_ingestion) %>

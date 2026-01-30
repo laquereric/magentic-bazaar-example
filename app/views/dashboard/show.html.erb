@@ -1,0 +1,91 @@
+<% content_for(:title, "Dashboard - MagenticBazaar") %>
+
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+  <p class="mt-1 text-sm text-gray-500">Overview of your document ingestion pipeline</p>
+</div>
+
+<!-- Stat Cards -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Documents</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @document_count %></div>
+      <div class="mt-1 text-xs text-gray-400"><%= @ingested_count %> ingested</div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Skills</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @skill_count %></div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">UML Diagrams</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @uml_count %></div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Ingestions</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @recent_ingestions.size %></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <!-- Recent Ingestions -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Recent Ingestions</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @recent_ingestions.any? %>
+        <% @recent_ingestions.each do |ingestion| %>
+          <div class="px-6 py-4 flex items-center justify-between">
+            <div>
+              <span class="text-sm font-medium text-gray-900"><%= ingestion.direction.capitalize %></span>
+              <span class="ml-2"><%= status_badge(ingestion.status) %></span>
+            </div>
+            <div class="text-sm text-gray-500">
+              <%= ingestion.documents_processed %>/<%= ingestion.documents_count %> docs
+              <span class="ml-2"><%= time_ago_in_words(ingestion.created_at) %> ago</span>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-8 text-center text-sm text-gray-500">No ingestions yet. Upload files and trigger an ingestion to get started.</div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- UML Type Distribution -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">UML Diagram Types</h2>
+    </div>
+    <div class="p-6">
+      <% if @uml_type_distribution.any? %>
+        <div class="space-y-3">
+          <% @uml_type_distribution.each do |type, count| %>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-700"><%= type %></span>
+              <div class="flex items-center gap-2">
+                <div class="w-32 bg-gray-200 rounded-full h-2">
+                  <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= (count.to_f / [@uml_type_distribution.values.max, 1].max * 100).round %>%"></div>
+                </div>
+                <span class="text-sm text-gray-500 w-8 text-right"><%= count %></span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">No UML diagrams yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
