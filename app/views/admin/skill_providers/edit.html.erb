@@ -1,0 +1,11 @@
+<% content_for(:title, "Edit #{@skill_provider.name} - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Skill Provider".html_safe, admin_skill_provider_path(@skill_provider), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Edit Skill Provider</h1>
+</div>
+
+<%= render "form", skill_provider: @skill_provider %>

@@ -1,0 +1,12 @@
+<% content_for(:title, "New Skill Provider - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Skill Providers".html_safe, admin_skill_providers_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">New Skill Provider</h1>
+  <p class="mt-1 text-sm text-gray-500">Configure a new skill provider linked to an MCP provider</p>
+</div>
+
+<%= render "form", skill_provider: @skill_provider %>

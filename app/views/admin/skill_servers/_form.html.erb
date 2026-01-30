@@ -1,0 +1,82 @@
+<div class="max-w-2xl">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Server Details</h2>
+    </div>
+
+    <%= form_with(model: skill_server, url: skill_server.persisted? ? admin_skill_server_path(skill_server) : admin_skill_servers_path, class: "p-6 space-y-6") do |f| %>
+      <% if skill_server.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <ul class="list-disc list-inside text-sm text-red-800">
+            <% skill_server.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :name, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", placeholder: "e.g. Document Search Skill Server" %>
+      </div>
+
+      <div>
+        <%= f.label :description, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_area :description, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", placeholder: "Describe what this skill server does..." %>
+      </div>
+
+      <div>
+        <%= f.label :mcp_server_id, "MCP Server", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.collection_select :mcp_server_id, MagenticBazaar::McpServer.order(:name), :id, :name, { include_blank: "None" }, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        <p class="mt-1 text-xs text-gray-500">Optionally link to an existing MCP server</p>
+      </div>
+
+      <div>
+        <%= f.label :transport_type, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.select :transport_type, [["stdio", "stdio"], ["SSE", "sse"], ["Streamable HTTP", "streamable_http"]], { include_blank: "Select transport..." }, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :command, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :command, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm font-mono", placeholder: "e.g. npx @modelcontextprotocol/server" %>
+        <p class="mt-1 text-xs text-gray-500">Command to start the server (for stdio transport)</p>
+      </div>
+
+      <div>
+        <%= f.label :url, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :url, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm font-mono", placeholder: "e.g. http://localhost:3001/mcp" %>
+        <p class="mt-1 text-xs text-gray-500">Server URL (for SSE or Streamable HTTP transport)</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :version, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :version, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", placeholder: "1.0.0" %>
+        </div>
+        <div>
+          <%= f.label :category, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :category, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", placeholder: "e.g. Search" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :status, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.select :status, [["Inactive", "inactive"], ["Active", "active"], ["Error", "error"]], {}, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= f.check_box :active, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+        <%= f.label :active, "Active", class: "text-sm font-medium text-gray-700" %>
+      </div>
+
+      <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+        <%= f.submit skill_server.persisted? ? "Update Skill Server" : "Create Skill Server", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer" %>
+        <% if skill_server.persisted? %>
+          <%= link_to "Cancel", admin_skill_server_path(skill_server), class: "text-sm text-gray-500 hover:text-gray-700" %>
+        <% else %>
+          <%= link_to "Cancel", admin_skill_servers_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_180001) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_200001) do
   create_table "llm_engine_llm_model_configurations", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
@@ -150,6 +150,58 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_180001) do
     t.index ["name"], name: "index_magentic_bazaar_mcp_servers_on_name"
     t.index ["status"], name: "index_magentic_bazaar_mcp_servers_on_status"
     t.index ["transport_type"], name: "index_magentic_bazaar_mcp_servers_on_transport_type"
+  end
+
+  create_table "magentic_bazaar_skill_providers", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.text "args"
+    t.string "category"
+    t.string "command"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "document_id"
+    t.text "env_vars"
+    t.text "error_log"
+    t.datetime "last_connected_at"
+    t.integer "mcp_provider_id"
+    t.string "name", null: false
+    t.string "status", default: "disconnected"
+    t.text "tools"
+    t.string "transport_type"
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.string "version", default: "1.0.0"
+    t.index ["document_id"], name: "index_magentic_bazaar_skill_providers_on_document_id"
+    t.index ["mcp_provider_id"], name: "index_magentic_bazaar_skill_providers_on_mcp_provider_id"
+    t.index ["name"], name: "index_magentic_bazaar_skill_providers_on_name"
+    t.index ["status"], name: "index_magentic_bazaar_skill_providers_on_status"
+    t.index ["transport_type"], name: "index_magentic_bazaar_skill_providers_on_transport_type"
+  end
+
+  create_table "magentic_bazaar_skill_servers", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.text "args"
+    t.string "category"
+    t.string "command"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "document_id"
+    t.text "env_vars"
+    t.text "error_log"
+    t.datetime "last_connected_at"
+    t.integer "mcp_server_id"
+    t.string "name", null: false
+    t.string "status", default: "inactive"
+    t.text "tools"
+    t.string "transport_type"
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.string "version", default: "1.0.0"
+    t.index ["document_id"], name: "index_magentic_bazaar_skill_servers_on_document_id"
+    t.index ["mcp_server_id"], name: "index_magentic_bazaar_skill_servers_on_mcp_server_id"
+    t.index ["name"], name: "index_magentic_bazaar_skill_servers_on_name"
+    t.index ["status"], name: "index_magentic_bazaar_skill_servers_on_status"
+    t.index ["transport_type"], name: "index_magentic_bazaar_skill_servers_on_transport_type"
   end
 
   create_table "magentic_bazaar_skills", force: :cascade do |t|
@@ -331,6 +383,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_180001) do
   add_foreign_key "magentic_bazaar_documents", "magentic_bazaar_ingestions", column: "ingestion_id"
   add_foreign_key "magentic_bazaar_mcp_providers", "magentic_bazaar_documents", column: "document_id"
   add_foreign_key "magentic_bazaar_mcp_servers", "magentic_bazaar_documents", column: "document_id"
+  add_foreign_key "magentic_bazaar_skill_providers", "magentic_bazaar_documents", column: "document_id"
+  add_foreign_key "magentic_bazaar_skill_providers", "magentic_bazaar_mcp_providers", column: "mcp_provider_id"
+  add_foreign_key "magentic_bazaar_skill_servers", "magentic_bazaar_documents", column: "document_id"
+  add_foreign_key "magentic_bazaar_skill_servers", "magentic_bazaar_mcp_servers", column: "mcp_server_id"
   add_foreign_key "magentic_bazaar_skills", "magentic_bazaar_documents", column: "document_id"
   add_foreign_key "magentic_bazaar_uml_diagrams", "magentic_bazaar_documents", column: "document_id"
   add_foreign_key "sessions", "users"

@@ -1,0 +1,12 @@
+<% content_for(:title, "New Skill Server - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Skill Servers".html_safe, admin_skill_servers_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">New Skill Server</h1>
+  <p class="mt-1 text-sm text-gray-500">Configure a new skill server linked to an MCP server</p>
+</div>
+
+<%= render "form", skill_server: @skill_server %>

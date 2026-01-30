@@ -29,6 +29,8 @@ Rails.application.routes.draw do
     resources :llm_model_configurations, only: [ :edit, :update, :destroy ]
     resources :mcp_servers
     resources :mcp_providers
+    resources :skill_servers
+    resources :skill_providers
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
