@@ -1,0 +1,55 @@
+<div class="max-w-2xl">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Runtime Details</h2>
+    </div>
+
+    <%= form_with(model: [:admin, container_runtime], class: "p-6 space-y-6") do |f| %>
+      <% if container_runtime.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <ul class="list-disc list-inside text-sm text-red-800">
+            <% container_runtime.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :name, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", placeholder: "e.g. Local Docker" %>
+      </div>
+
+      <div>
+        <%= f.label :driver, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.select :driver, [["Docker", "docker"]], { prompt: "Select a driver..." }, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" %>
+        <p class="mt-1 text-xs text-gray-500">The container runtime driver to use.</p>
+      </div>
+
+      <div>
+        <%= f.label :socket_path, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :socket_path, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm font-mono", placeholder: "e.g. /var/run/docker.sock (leave blank for default)" %>
+      </div>
+
+      <div>
+        <%= f.label :connection_options, class: "block text-sm font-medium text-gray-700" %>
+        <%= f.text_area :connection_options, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm font-mono", placeholder: '{"key": "value"}' %>
+        <p class="mt-1 text-xs text-gray-500">JSON object with additional connection options.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= f.check_box :active, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+        <%= f.label :active, "Active", class: "text-sm font-medium text-gray-700" %>
+      </div>
+
+      <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+        <%= f.submit container_runtime.persisted? ? "Update Container Runtime" : "Create Container Runtime", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer" %>
+        <% if container_runtime.persisted? %>
+          <%= link_to "Cancel", admin_container_runtime_path(container_runtime), class: "text-sm text-gray-500 hover:text-gray-700" %>
+        <% else %>
+          <%= link_to "Cancel", admin_container_runtimes_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

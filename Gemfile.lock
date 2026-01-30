@@ -1,4 +1,36 @@
 GIT
+  remote: https://github.com/laquereric/container-docker-ruby.git
+  revision: c319ea1210b63bcea047b7da08784fd3b1d31ce5
+  specs:
+    container-docker (0.1.0)
+      base64
+      container (~> 0.1)
+      docker-api (~> 2.0)
+      thor (~> 1.3)
+
+GIT
+  remote: https://github.com/laquereric/container-ruby.git
+  revision: 419867336ea670cf0fe34a7a1e4f35279caeeae4
+  specs:
+    container (0.1.0)
+      thor (~> 1.3)
+
+GIT
+  remote: https://github.com/laquereric/hosting-hostinger.git
+  revision: 7bc6e3dc14c69873aeac578e477b02b5f617868b
+  specs:
+    hosting-hostinger (0.1.0)
+      faraday (~> 2.0)
+      hosting (~> 0.1)
+
+GIT
+  remote: https://github.com/laquereric/hosting.git
+  revision: db3bcaed3db8b9dc9e1ab27ddd3c140ca0cdc3c2
+  specs:
+    hosting (0.1.0)
+      faraday (~> 2.0)
+
+GIT
   remote: https://github.com/laquereric/llm-engine-gem.git
   revision: dff5c5c963d5f0f160b661c7c7f76adbb6567b9c
   ref: dff5c5c
@@ -150,6 +182,9 @@ GEM
     debug (1.11.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    docker-api (2.4.0)
+      excon (>= 0.64.0)
+      multi_json
     dotenv (3.2.0)
     drb (2.2.3)
     ed25519 (1.4.0)
@@ -158,6 +193,8 @@ GEM
     et-orbi (1.4.0)
       tzinfo
     event_stream_parser (1.0.0)
+    excon (1.3.2)
+      logger
     faraday (2.14.0)
       faraday-net_http (>= 2.0, < 3.5)
       json
@@ -231,6 +268,7 @@ GEM
     minitest (6.0.1)
       prism (~> 1.5)
     msgpack (1.8.0)
+    multi_json (1.19.1)
     multipart-post (2.4.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
@@ -486,7 +524,11 @@ DEPENDENCIES
   brakeman
   bundler-audit
   capybara
+  container!
+  container-docker!
   debug
+  hosting!
+  hosting-hostinger!
   image_processing (~> 1.2)
   importmap-rails
   inertia_rails
@@ -545,9 +587,12 @@ CHECKSUMS
   cgi (0.5.1) sha256=e93fcafc69b8a934fe1e6146121fa35430efa8b4a4047c4893764067036f18e9
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
+  container (0.1.0)
+  container-docker (0.1.0)
   crass (1.0.6) sha256=dc516022a56e7b3b156099abc81b6d2b08ea1ed12676ac7a5657617f012bd45d
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
   debug (1.11.1) sha256=2e0b0ac6119f2207a6f8ac7d4a73ca8eb4e440f64da0a3136c30343146e952b6
+  docker-api (2.4.0) sha256=824be734f4cc8718189be9c8e795b6414acbbf7e8b082a06f959a27dd8dd63e6
   dotenv (3.2.0) sha256=e375b83121ea7ca4ce20f214740076129ab8514cd81378161f11c03853fe619d
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
   ed25519 (1.4.0) sha256=16e97f5198689a154247169f3453ef4cfd3f7a47481fde0ae33206cdfdcac506
@@ -555,6 +600,7 @@ CHECKSUMS
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   et-orbi (1.4.0) sha256=6c7e3c90779821f9e3b324c5e96fda9767f72995d6ae435b96678a4f3e2de8bc
   event_stream_parser (1.0.0) sha256=a2683bab70126286f8184dc88f7968ffc4028f813161fb073ec90d171f7de3c8
+  excon (1.3.2) sha256=a089babe98638e58042a7d542b2bbd183304527e33d612b6dde22fa491a544a5
   faraday (2.14.0) sha256=8699cfe5d97e55268f2596f9a9d5a43736808a943714e3d9a53e6110593941cd
   faraday-multipart (1.2.0) sha256=7d89a949693714176f612323ca13746a2ded204031a6ba528adee788694ef757
   faraday-net_http (3.4.2) sha256=f147758260d3526939bf57ecf911682f94926a3666502e24c69992765875906c
@@ -569,6 +615,8 @@ CHECKSUMS
   fugit (1.12.1) sha256=5898f478ede9b415f0804e42b8f3fd53f814bd85eebffceebdbc34e1107aaf68
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
   hashery (2.1.2) sha256=d239cc2310401903f6b79d458c2bbef5bf74c46f3f974ae9c1061fb74a404862
+  hosting (0.1.0)
+  hosting-hostinger (0.1.0)
   i18n (1.14.8) sha256=285778639134865c5e0f6269e0b818256017e8cde89993fdfcbfb64d088824a5
   image_processing (1.14.0) sha256=754cc169c9c262980889bec6bfd325ed1dafad34f85242b5a07b60af004742fb
   importmap-rails (2.2.3) sha256=7101be2a4dc97cf1558fb8f573a718404c5f6bcfe94f304bf1f39e444feeb16a
@@ -591,6 +639,7 @@ CHECKSUMS
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitest (6.0.1) sha256=7854c74f48e2e975969062833adc4013f249a4b212f5e7b9d5c040bf838d54bb
   msgpack (1.8.0) sha256=e64ce0212000d016809f5048b48eb3a65ffb169db22238fb4b72472fecb2d732
+  multi_json (1.19.1) sha256=7aefeff8f2c854bf739931a238e4aea64592845e0c0395c8a7d2eea7fdd631b7
   multipart-post (2.4.1) sha256=9872d03a8e552020ca096adadbf5e3cb1cd1cdd6acd3c161136b8a5737cdb4a8
   net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
   net-imap (0.6.2) sha256=08caacad486853c61676cca0c0c47df93db02abc4a8239a8b67eb0981428acc6

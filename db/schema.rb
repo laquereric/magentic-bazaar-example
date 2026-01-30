@@ -10,7 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_200001) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_210001) do
+  create_table "container_runtimes", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.text "connection_options"
+    t.datetime "created_at", null: false
+    t.string "driver"
+    t.text "error_log"
+    t.datetime "last_tested_at"
+    t.string "name", null: false
+    t.string "socket_path"
+    t.string "status", default: "inactive"
+    t.datetime "updated_at", null: false
+    t.index ["driver"], name: "index_container_runtimes_on_driver"
+    t.index ["name"], name: "index_container_runtimes_on_name"
+    t.index ["status"], name: "index_container_runtimes_on_status"
+  end
+
+  create_table "hosting_providers", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.text "api_token"
+    t.string "base_url"
+    t.datetime "created_at", null: false
+    t.text "error_log"
+    t.datetime "last_tested_at"
+    t.string "name", null: false
+    t.integer "per_page", default: 50
+    t.string "provider_type"
+    t.string "status", default: "inactive"
+    t.integer "timeout", default: 30
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_hosting_providers_on_name"
+    t.index ["provider_type"], name: "index_hosting_providers_on_provider_type"
+    t.index ["status"], name: "index_hosting_providers_on_status"
+  end
+
   create_table "llm_engine_llm_model_configurations", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false

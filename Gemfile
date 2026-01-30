@@ -36,6 +36,14 @@ gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git", ref: 
 gem "anthropic"
 gem "ruby_llm"
 
+# Hosting provider — unified interface to hosting APIs
+gem "hosting", git: "https://github.com/laquereric/hosting.git"
+gem "hosting-hostinger", git: "https://github.com/laquereric/hosting-hostinger.git"
+
+# Container runtime — unified interface to OCI container runtimes
+gem "container", git: "https://github.com/laquereric/container-ruby.git"
+gem "container-docker", git: "https://github.com/laquereric/container-docker-ruby.git"
+
 # Pagination
 gem "pagy"
 

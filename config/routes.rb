@@ -31,6 +31,12 @@ Rails.application.routes.draw do
     resources :mcp_providers
     resources :skill_servers
     resources :skill_providers
+    resources :hosting_providers do
+      post :test, on: :member
+    end
+    resources :container_runtimes do
+      post :test, on: :member
+    end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

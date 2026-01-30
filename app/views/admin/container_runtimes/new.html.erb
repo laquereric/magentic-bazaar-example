@@ -1,0 +1,12 @@
+<% content_for(:title, "New Container Runtime - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Container Runtimes".html_safe, admin_container_runtimes_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">New Container Runtime</h1>
+  <p class="mt-1 text-sm text-gray-500">Configure a new container runtime instance</p>
+</div>
+
+<%= render "form", container_runtime: @container_runtime %>
