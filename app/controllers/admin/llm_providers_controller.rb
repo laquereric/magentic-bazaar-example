@@ -51,14 +51,22 @@ module Admin
       config = @provider.llm_model_configurations.active.detect { |c| c.api_key.present? }
 
       if config.nil?
-        redirect_to admin_llm_provider_path(@provider), alert: "No active model configuration with an API key to test."
+        redirect_to admin_llm_provider_path(@provider), alert: "Test failed: no active model configuration with an API key found."
         return
       end
 
-      config.adapter.models
-      redirect_to admin_llm_provider_path(@provider), notice: "Connection successful — #{@provider.name} is reachable."
+      model_name = config.llm_model.display_name
+      gem_name = @provider.llm_provider_gem.gem_name
+
+      models = config.adapter.models
+      @provider.update_column(:last_tested_at, Time.current)
+      redirect_to admin_llm_provider_path(@provider),
+        notice: "Connection successful — #{@provider.name} is reachable. Tested via #{model_name} using #{gem_name}; #{models.size} models returned."
     rescue => e
-      redirect_to admin_llm_provider_path(@provider), alert: "Connection failed: #{e.message}"
+      model_name ||= config&.llm_model&.display_name || "unknown"
+      gem_name ||= @provider.llm_provider_gem&.gem_name || "unknown"
+      redirect_to admin_llm_provider_path(@provider),
+        alert: "Connection failed for #{@provider.name}. Tested via #{model_name} using #{gem_name}. Error: #{e.message}"
     end
 
     def destroy
