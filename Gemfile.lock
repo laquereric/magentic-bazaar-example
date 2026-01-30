@@ -1,10 +1,11 @@
 GIT
   remote: https://github.com/laquereric/magentic-bazaar.git
-  revision: 13379f5a2274f68d528f7c462b1c98655369fe35
+  revision: d54221fe8c31f444404ac9b8cdfcaae6af8e94c8
   specs:
     magentic-bazaar (0.1.0)
       activejob (>= 7.0)
       activerecord (>= 7.0)
+      nokogiri (~> 1.16)
       pdf-reader (~> 2.0)
       rails (>= 7.0)
       rails-multistore (~> 0.1)

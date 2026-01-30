@@ -27,7 +27,8 @@ module ApplicationHelper
     colors = {
       "Markdown"     => "bg-purple-100 text-purple-800",
       "PDF"          => "bg-red-100 text-red-800",
-      "Image (OCR)"  => "bg-teal-100 text-teal-800"
+      "Image (OCR)"  => "bg-teal-100 text-teal-800",
+      "HTML"         => "bg-orange-100 text-orange-800"
     }
 
     css = colors[file_type.to_s] || "bg-gray-100 text-gray-800"

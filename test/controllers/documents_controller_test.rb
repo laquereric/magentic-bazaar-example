@@ -26,6 +26,11 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "index with HTML file type filter" do
+    get documents_path, params: { file_type: "HTML" }
+    assert_response :success
+  end
+
   test "show returns success" do
     doc = magentic_bazaar_documents(:sample_doc)
     get document_path(doc)

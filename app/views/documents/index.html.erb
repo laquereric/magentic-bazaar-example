@@ -14,7 +14,7 @@
       <%= text_field_tag :q, params[:q], placeholder: "Search documents...", class: "w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", data: { search_target: "input", action: "input->search#search" } %>
     </div>
     <div>
-      <%= select_tag :file_type, options_for_select([["All Types", ""], "Markdown", "PDF", "Image (OCR)"], params[:file_type]), class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", data: { controller: "filter", action: "change->filter#submit" } %>
+      <%= select_tag :file_type, options_for_select([["All Types", ""], "Markdown", "PDF", "HTML", "Image (OCR)"], params[:file_type]), class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", data: { controller: "filter", action: "change->filter#submit" } %>
     </div>
     <div>
       <%= select_tag :status, options_for_select([["All Statuses", ""], "pending", "ingested", "undone"], params[:status]), class: "rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm", data: { controller: "filter", action: "change->filter#submit" } %>

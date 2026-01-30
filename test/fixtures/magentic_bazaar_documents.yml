@@ -7,3 +7,13 @@ sample_doc:
   word_count: 500
   raw_content: "This is sample content."
   ingestion_id: <%= ActiveRecord::FixtureSet.identify(:completed_ingestion) %>
+
+html_doc:
+  title: Sample HTML Page
+  original_filename: sample_html_page.html
+  uuid7: htm5678
+  file_type: HTML
+  status: ingested
+  word_count: 150
+  raw_content: "This is sample HTML content."
+  ingestion_id: <%= ActiveRecord::FixtureSet.identify(:completed_ingestion) %>
