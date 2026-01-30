@@ -1,0 +1,33 @@
+' Generated at: 2026-01-30 16:38:29
+' Git SHA: 36608b4f0138686546af8bc887377866f51b531d
+' UUID7: b6c2a86
+' UML Type: use_case
+
+' Generated at: 2026-01-30 16:38:29
+' UML Type: use_case
+
+@startuml
+title Architecture Documentation - Use Case Diagram
+
+actor User
+actor Administrator
+actor System
+
+rectangle "System Boundary" {
+  User -- (Login)
+  User -- (Browse Content)
+  User -- (Search)
+  Administrator -- (Manage Users)
+  Administrator -- (Configure System)
+  System -- (Process Data)
+  System -- (Generate Reports)
+}
+
+User .> Administrator : inheritance
+
+note right of User
+  Primary actor
+  interacts with system
+end note
+
+@enduml
