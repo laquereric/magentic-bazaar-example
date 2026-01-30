@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import MdxRenderer from '../../components/MdxRenderer'
+import PlantUmlDiagram from '../../components/PlantUmlDiagram'
 
 function CopyButton({ text, label = 'Copy to Clipboard' }) {
   const [copied, setCopied] = useState(false)
@@ -22,7 +23,7 @@ function CopyButton({ text, label = 'Copy to Clipboard' }) {
 
 export default function UmlDiagramsShow({ uml_diagram, document, mdx }) {
   const hasRendered = mdx && mdx.compiled_source
-  const [tab, setTab] = useState(hasRendered ? 'rendered' : 'raw')
+  const [tab, setTab] = useState('diagram')
 
   return (
     <>
@@ -57,6 +58,16 @@ export default function UmlDiagramsShow({ uml_diagram, document, mdx }) {
         <div className="border-b border-gray-200 flex items-center justify-between">
           <nav className="flex -mb-px">
             <button
+              onClick={() => setTab('diagram')}
+              className={`px-6 py-3 text-sm font-medium border-b-2 ${
+                tab === 'diagram'
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Diagram
+            </button>
+            <button
               onClick={() => setTab('rendered')}
               className={`px-6 py-3 text-sm font-medium border-b-2 ${
                 tab === 'rendered'
@@ -82,13 +93,17 @@ export default function UmlDiagramsShow({ uml_diagram, document, mdx }) {
           </div>
         </div>
         <div className="p-6">
-          {tab === 'rendered' ? (
+          {tab === 'diagram' && (
+            <PlantUmlDiagram pumlContent={uml_diagram.puml_content} />
+          )}
+          {tab === 'rendered' && (
             hasRendered ? (
               <MdxRenderer compiledSource={mdx.compiled_source} frontmatter={mdx.frontmatter} />
             ) : (
               <p className="text-sm text-gray-500 text-center py-4">No rendered content available.</p>
             )
-          ) : (
+          )}
+          {tab === 'raw' && (
             <pre className="bg-gray-50 rounded-md p-6 text-sm overflow-x-auto font-mono whitespace-pre-wrap">
               {uml_diagram.puml_content}
             </pre>

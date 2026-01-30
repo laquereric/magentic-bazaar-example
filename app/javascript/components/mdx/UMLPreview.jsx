@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import PlantUmlDiagram from '../PlantUmlDiagram'
 
 export default function UMLPreview({ title, diagramType, subtype, pumlContent }) {
   const [showSource, setShowSource] = useState(false)
@@ -49,11 +50,8 @@ export default function UMLPreview({ title, diagramType, subtype, pumlContent })
       )}
 
       {!showSource && (
-        <div className="p-4 text-center text-sm text-gray-500">
-          <p>PlantUML source available. Click "View Source" to see the diagram code.</p>
-          <p className="mt-1 text-xs text-gray-400">
-            Copy the source and paste into a PlantUML renderer to visualize.
-          </p>
+        <div className="p-4">
+          <PlantUmlDiagram pumlContent={pumlContent} />
         </div>
       )}
     </div>

@@ -8,6 +8,7 @@
     "@inertiajs/react": "^2.0",
     "@mdx-js/react": "^3.0",
     "mdx-bundler": "^10.0",
+    "plantuml-encoder": "^1.4.0",
     "react": "^19.0",
     "react-dom": "^19.0"
   },
