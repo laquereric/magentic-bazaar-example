@@ -1,0 +1,11 @@
+<% content_for(:title, "Edit #{@provider.name} - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Provider".html_safe, admin_llm_provider_path(@provider), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Edit Provider</h1>
+</div>
+
+<%= render "form", provider: @provider, provider_gems: @provider_gems %>

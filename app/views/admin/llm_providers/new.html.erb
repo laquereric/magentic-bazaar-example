@@ -1,0 +1,12 @@
+<% content_for(:title, "New Provider - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to Providers".html_safe, admin_llm_providers_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">New Provider</h1>
+  <p class="mt-1 text-sm text-gray-500">Create a new LLM provider instance</p>
+</div>
+
+<%= render "form", provider: @provider, provider_gems: @provider_gems %>

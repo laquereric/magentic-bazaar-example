@@ -10,6 +10,10 @@ gem "sqlite3", ">= 2.1"
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
+# Bundle JavaScript with esbuild for React/Inertia pages [https://github.com/rails/jsbundling-rails]
+gem "jsbundling-rails"
+# Inertia.js Rails adapter for React page rendering [https://github.com/inertiajs/inertia-rails]
+gem "inertia_rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
@@ -23,6 +27,12 @@ gem "bcrypt", "~> 3.1.7"
 # MagenticBazaar document ingestion engine
 gem "magentic-bazaar", git: "https://github.com/laquereric/magentic-bazaar.git", require: "magentic_bazaar"
 gem "rails-multistore", git: "https://github.com/laquereric/rails-multistore.git", require: "rails_multistore"
+
+# MDX compilation and rendering for Inertia.js pages
+gem "rails-inertia-mdx", path: "../rails-inertia-mdx", require: "rails_inertia_mdx"
+
+# LLM provider engine — unified interface to multiple LLM providers
+gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git"
 
 # Pagination
 gem "pagy"

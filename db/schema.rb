@@ -10,7 +10,67 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_135324) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_161947) do
+  create_table "llm_engine_llm_model_configurations", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.text "encrypted_credentials"
+    t.integer "llm_model_id", null: false
+    t.integer "llm_provider_id", null: false
+    t.json "settings", default: {}
+    t.datetime "updated_at", null: false
+    t.index ["llm_model_id"], name: "index_llm_engine_llm_model_configurations_on_llm_model_id"
+    t.index ["llm_provider_id", "llm_model_id"], name: "idx_llm_engine_configs_on_provider_and_model", unique: true
+    t.index ["llm_provider_id"], name: "index_llm_engine_llm_model_configurations_on_llm_provider_id"
+  end
+
+  create_table "llm_engine_llm_models", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.string "api_name", null: false
+    t.integer "context_window"
+    t.datetime "created_at", null: false
+    t.string "display_name"
+    t.integer "llm_vendor_id", null: false
+    t.string "model_type"
+    t.boolean "supports_streaming", default: false
+    t.boolean "supports_tools", default: false
+    t.boolean "supports_vision", default: false
+    t.datetime "updated_at", null: false
+    t.index ["llm_vendor_id", "api_name"], name: "index_llm_engine_llm_models_on_llm_vendor_id_and_api_name", unique: true
+    t.index ["llm_vendor_id"], name: "index_llm_engine_llm_models_on_llm_vendor_id"
+  end
+
+  create_table "llm_engine_llm_provider_gems", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "gem_name", null: false
+    t.integer "llm_vendor_id"
+    t.string "module_name"
+    t.boolean "official", default: false
+    t.string "require_name"
+    t.datetime "updated_at", null: false
+    t.index ["gem_name"], name: "index_llm_engine_llm_provider_gems_on_gem_name", unique: true
+    t.index ["llm_vendor_id"], name: "index_llm_engine_llm_provider_gems_on_llm_vendor_id"
+  end
+
+  create_table "llm_engine_llm_providers", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.integer "llm_provider_gem_id", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["llm_provider_gem_id"], name: "index_llm_engine_llm_providers_on_llm_provider_gem_id"
+    t.index ["name"], name: "index_llm_engine_llm_providers_on_name", unique: true
+  end
+
+  create_table "llm_engine_llm_vendors", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.string "website_url"
+    t.index ["name"], name: "index_llm_engine_llm_vendors_on_name", unique: true
+  end
+
   create_table "magentic_bazaar_documents", force: :cascade do |t|
     t.string "archived_path"
     t.string "content_hash"
@@ -93,6 +153,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_135324) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "llm_engine_llm_model_configurations", "llm_engine_llm_models", column: "llm_model_id"
+  add_foreign_key "llm_engine_llm_model_configurations", "llm_engine_llm_providers", column: "llm_provider_id"
+  add_foreign_key "llm_engine_llm_models", "llm_engine_llm_vendors", column: "llm_vendor_id"
+  add_foreign_key "llm_engine_llm_provider_gems", "llm_engine_llm_vendors", column: "llm_vendor_id"
+  add_foreign_key "llm_engine_llm_providers", "llm_engine_llm_provider_gems", column: "llm_provider_gem_id"
   add_foreign_key "magentic_bazaar_documents", "magentic_bazaar_ingestions", column: "ingestion_id"
   add_foreign_key "magentic_bazaar_skills", "magentic_bazaar_documents", column: "document_id"
   add_foreign_key "magentic_bazaar_uml_diagrams", "magentic_bazaar_documents", column: "document_id"

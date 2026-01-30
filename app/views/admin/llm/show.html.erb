@@ -1,0 +1,113 @@
+<% content_for(:title, "LLM Providers - Admin") %>
+
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">LLM Providers</h1>
+    <p class="mt-1 text-sm text-gray-500">Manage LLM vendors, providers, and model configurations</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= button_to "Seed Database", seed_admin_llm_path, method: :post, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+    <%= link_to "New Provider", new_admin_llm_provider_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700" %>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6 mb-8">
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Vendors</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @vendor_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Provider Gems</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @provider_gem_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Providers</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @provider_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Models</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @model_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Configurations</div>
+      <div class="mt-1 text-3xl font-semibold text-gray-900"><%= @config_count %></div>
+    </div>
+  </div>
+  <div class="overflow-hidden rounded-lg bg-white shadow">
+    <div class="p-5">
+      <div class="text-sm font-medium text-gray-500">Active Configs</div>
+      <div class="mt-1 text-3xl font-semibold text-green-600"><%= @active_configs %></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <!-- Vendors -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Vendors</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @vendors.any? %>
+        <% @vendors.each do |vendor| %>
+          <div class="px-6 py-3 flex items-center justify-between">
+            <div>
+              <span class="text-sm font-medium text-gray-900"><%= vendor.name %></span>
+              <span class="ml-2 text-xs text-gray-500"><%= vendor.llm_models.size %> models</span>
+            </div>
+            <% if vendor.website_url.present? %>
+              <a href="<%= vendor.website_url %>" target="_blank" rel="noopener" class="text-xs text-indigo-600 hover:text-indigo-900">Website</a>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-8 text-center text-sm text-gray-500">
+          No vendors yet. Click "Seed Database" to populate reference data.
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Provider Gems -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Provider Gems</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @provider_gems.any? %>
+        <% @provider_gems.each do |gem| %>
+          <div class="px-6 py-3 flex items-center justify-between">
+            <div>
+              <span class="text-sm font-mono text-gray-900"><%= gem.gem_name %></span>
+              <% if gem.llm_vendor %>
+                <span class="ml-2 text-xs text-gray-500"><%= gem.llm_vendor.name %></span>
+              <% end %>
+              <% if gem.official? %>
+                <span class="ml-1 inline-flex items-center rounded-full bg-green-100 text-green-800 px-1.5 py-0.5 text-xs font-medium">official</span>
+              <% end %>
+            </div>
+            <% if gem.installed? %>
+              <span class="inline-flex items-center rounded-full bg-green-100 text-green-800 px-2 py-0.5 text-xs font-medium">Installed</span>
+            <% else %>
+              <span class="inline-flex items-center rounded-full bg-gray-100 text-gray-600 px-2 py-0.5 text-xs font-medium">Not installed</span>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-8 text-center text-sm text-gray-500">
+          No provider gems yet. Click "Seed Database" to populate reference data.
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
