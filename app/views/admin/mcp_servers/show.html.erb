@@ -1,0 +1,120 @@
+<% content_for(:title, "#{@mcp_server.name} - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to MCP Servers".html_safe, admin_mcp_servers_path, class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900"><%= @mcp_server.name %></h1>
+    <div class="mt-2 flex items-center gap-3">
+      <%= status_badge(@mcp_server.status) %>
+      <% if @mcp_server.active? %>
+        <span class="inline-flex items-center rounded-full bg-green-100 text-green-800 px-2.5 py-0.5 text-xs font-medium">Active</span>
+      <% else %>
+        <span class="inline-flex items-center rounded-full bg-gray-100 text-gray-600 px-2.5 py-0.5 text-xs font-medium">Inactive</span>
+      <% end %>
+      <% if @mcp_server.transport_type.present? %>
+        <span class="inline-flex items-center rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 text-xs font-medium"><%= @mcp_server.transport_type %></span>
+      <% end %>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= link_to "Edit", edit_admin_mcp_server_path(@mcp_server), class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+    <%= button_to "Delete", admin_mcp_server_path(@mcp_server), method: :delete, data: { turbo_confirm: "Delete this MCP server?" }, class: "inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50" %>
+  </div>
+</div>
+
+<!-- Details -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Server Details</h2>
+    </div>
+    <dl class="px-6 py-4 space-y-4">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Description</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @mcp_server.description.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Transport Type</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @mcp_server.transport_type.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Command</dt>
+        <dd class="mt-1 text-sm font-mono text-gray-900"><%= @mcp_server.command.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">URL</dt>
+        <dd class="mt-1 text-sm font-mono text-gray-900"><%= @mcp_server.url.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Version</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @mcp_server.version %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Category</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @mcp_server.category.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Last Connected</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @mcp_server.last_connected_at&.strftime("%B %d, %Y at %l:%M %p") || "Never" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Tools -->
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Tools</h2>
+    </div>
+    <div class="px-6 py-4">
+      <% if @mcp_server.tools.present? %>
+        <pre class="text-xs font-mono bg-gray-50 rounded p-4 overflow-x-auto"><%= JSON.pretty_generate(@mcp_server.tools) rescue @mcp_server.tools %></pre>
+      <% else %>
+        <p class="text-sm text-gray-500">No tools configured.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Args & Env Vars -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Arguments</h2>
+    </div>
+    <div class="px-6 py-4">
+      <% if @mcp_server.args.present? %>
+        <pre class="text-xs font-mono bg-gray-50 rounded p-4 overflow-x-auto"><%= JSON.pretty_generate(@mcp_server.args) rescue @mcp_server.args %></pre>
+      <% else %>
+        <p class="text-sm text-gray-500">No arguments configured.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Environment Variables</h2>
+    </div>
+    <div class="px-6 py-4">
+      <% if @mcp_server.env_vars.present? %>
+        <pre class="text-xs font-mono bg-gray-50 rounded p-4 overflow-x-auto"><%= JSON.pretty_generate(@mcp_server.env_vars) rescue @mcp_server.env_vars %></pre>
+      <% else %>
+        <p class="text-sm text-gray-500">No environment variables configured.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Error Log -->
+<% if @mcp_server.error_log.present? %>
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-medium text-gray-900">Error Log</h2>
+    </div>
+    <div class="px-6 py-4">
+      <pre class="text-xs font-mono bg-red-50 text-red-800 rounded p-4 overflow-x-auto"><%= @mcp_server.error_log %></pre>
+    </div>
+  </div>
+<% end %>

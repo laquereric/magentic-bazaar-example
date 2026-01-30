@@ -1,0 +1,11 @@
+<% content_for(:title, "Edit #{@mcp_server.name} - Admin") %>
+
+<div class="mb-6">
+  <%= link_to "&larr; Back to MCP Server".html_safe, admin_mcp_server_path(@mcp_server), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+</div>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Edit MCP Server</h1>
+</div>
+
+<%= render "form", mcp_server: @mcp_server %>

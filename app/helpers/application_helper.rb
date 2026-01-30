@@ -16,7 +16,12 @@ module ApplicationHelper
       "completed" => "bg-green-100 text-green-800",
       "failed"    => "bg-red-100 text-red-800",
       "ingested"  => "bg-green-100 text-green-800",
-      "undone"    => "bg-gray-100 text-gray-800"
+      "undone"    => "bg-gray-100 text-gray-800",
+      "active"       => "bg-green-100 text-green-800",
+      "inactive"     => "bg-gray-100 text-gray-800",
+      "connected"    => "bg-green-100 text-green-800",
+      "disconnected" => "bg-gray-100 text-gray-800",
+      "error"        => "bg-red-100 text-red-800"
     }
 
     css = colors[status.to_s] || "bg-gray-100 text-gray-800"
