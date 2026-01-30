@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/laquereric/llm-engine-gem.git
-  revision: 79309c1451115a245b1d7dc52e697fee54e0b340
-  ref: 79309c1
+  revision: dff5c5c963d5f0f160b661c7c7f76adbb6567b9c
+  ref: dff5c5c
   specs:
     llm_engine (0.1.0)
       rails (>= 7.0)

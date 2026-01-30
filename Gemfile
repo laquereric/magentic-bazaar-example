@@ -32,7 +32,7 @@ gem "rails-multistore", git: "https://github.com/laquereric/rails-multistore.git
 gem "rails-inertia-mdx", path: "../rails-inertia-mdx", require: "rails_inertia_mdx"
 
 # LLM provider engine — unified interface to multiple LLM providers
-gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git", ref: "79309c1"
+gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git", ref: "dff5c5c"
 gem "anthropic"
 gem "ruby_llm"
 
