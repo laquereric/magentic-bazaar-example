@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PlantUmlDiagram from '../../components/PlantUmlDiagram'
 
 const REQUEST_LAYER_CONFIG = {
@@ -38,12 +38,12 @@ function StatusBadge({ status }) {
   )
 }
 
-function LayerCard({ layerKey, data, config }) {
+function LayerCard({ layerKey, data, config, highlighted }) {
   const layerConfig = config[layerKey]
   const colors = COLOR_CLASSES[layerConfig.color]
 
   return (
-    <div className={`overflow-hidden rounded-lg bg-white shadow border ${colors.border}`}>
+    <div className={`overflow-hidden rounded-lg bg-white shadow border transition-all duration-200 ${highlighted ? 'ring-2 ring-indigo-500 border-indigo-400 scale-[1.03] shadow-lg' : colors.border}`}>
       <div className={`px-4 py-3 ${colors.bg} border-b ${colors.border}`}>
         <div className="flex items-center gap-2">
           <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${colors.badge}`}>
@@ -87,18 +87,46 @@ const TRACEABLE_POSITION = {
   ResponseUser: 9,
 }
 
+// Maps traceable_type to PlantUML participant label
+const TRACEABLE_TO_PARTICIPANT = {
+  RequestUser: 'User',
+  RequestDevice: 'Device',
+  RequestService: 'Service',
+  RequestMiddleware: 'Middleware',
+  RequestProvider: 'Provider',
+  ResponseProvider: 'Provider',
+  ResponseMiddleware: 'Middleware',
+  ResponseService: 'Service',
+  ResponseDevice: 'Device',
+  ResponseUser: 'User',
+}
+
+// Maps traceable_type to { section: 'request'|'response', key: layerKey }
+const TRACEABLE_TO_LAYER = {
+  RequestUser:        { section: 'request',  key: 'users' },
+  RequestDevice:      { section: 'request',  key: 'devices' },
+  RequestService:     { section: 'request',  key: 'services' },
+  RequestMiddleware:  { section: 'request',  key: 'middlewares' },
+  RequestProvider:    { section: 'request',  key: 'providers' },
+  ResponseProvider:   { section: 'response', key: 'providers' },
+  ResponseMiddleware: { section: 'response', key: 'middlewares' },
+  ResponseService:    { section: 'response', key: 'services' },
+  ResponseDevice:     { section: 'response', key: 'devices' },
+  ResponseUser:       { section: 'response', key: 'users' },
+}
+
 const LAYER_LABELS = [
   'User', 'Device', 'Service', 'Middleware', 'Provider',
   'Provider', 'Middleware', 'Service', 'Device', 'User',
 ]
 
-const FLOW_STATUS_COLORS = {
-  matched: 'bg-green-500',
-  pending: 'bg-yellow-400',
-  error:   'bg-red-500',
+const BLOCK_STATUS_COLORS = {
+  matched: { bg: 'bg-green-200', selectedBg: 'bg-green-600', ring: 'ring-green-400', hover: 'hover:bg-green-300', text: 'text-green-800', selectedText: 'text-white' },
+  pending: { bg: 'bg-yellow-100', selectedBg: 'bg-yellow-500', ring: 'ring-yellow-400', hover: 'hover:bg-yellow-200', text: 'text-yellow-800', selectedText: 'text-white' },
+  error:   { bg: 'bg-red-200', selectedBg: 'bg-red-600', ring: 'ring-red-400', hover: 'hover:bg-red-300', text: 'text-red-800', selectedText: 'text-white' },
 }
 
-function FlowDocumentColumn({ flowDocuments }) {
+function FlowDocumentStrip({ flowDocuments, selected, onSelect }) {
   if (!flowDocuments || flowDocuments.length === 0) {
     return (
       <div className="bg-white shadow rounded-lg p-6 text-center text-sm text-gray-400">
@@ -108,51 +136,76 @@ function FlowDocumentColumn({ flowDocuments }) {
   }
 
   return (
-    <div className="space-y-0">
-      {flowDocuments.map((doc, idx) => {
-        const pos = doc.traceable_type ? TRACEABLE_POSITION[doc.traceable_type] : null
-        const layerLabel = pos !== null && pos !== undefined ? LAYER_LABELS[pos] : null
-        const isRequest = pos !== null && pos <= 4
-        const statusDot = FLOW_STATUS_COLORS[doc.status] || 'bg-gray-400'
+    <div className="space-y-3">
+      {/* Row 1: 10 narrow blocks */}
+      <div className="bg-white shadow rounded-lg border border-gray-200 p-3">
+        <div className="flex gap-2">
+          {flowDocuments.map((doc, idx) => {
+            const colors = BLOCK_STATUS_COLORS[doc.status] || { bg: 'bg-gray-400', ring: 'ring-gray-200', hover: 'hover:bg-gray-300' }
+            const isSelected = selected === idx
+            const pos = doc.traceable_type ? TRACEABLE_POSITION[doc.traceable_type] : null
+            const label = pos !== null && pos !== undefined ? LAYER_LABELS[pos] : '?'
 
-        return (
-          <div key={doc.id} className="relative">
-            {/* Connector line between cards */}
-            {idx > 0 && (
-              <div className="absolute left-5 -top-0 w-0.5 h-0 bg-gray-300" />
-            )}
-            <div className="flex items-start gap-3 group">
-              {/* Vertical flow indicator */}
-              <div className="flex flex-col items-center flex-shrink-0 pt-3">
-                <div className={`w-2.5 h-2.5 rounded-full ${statusDot} ring-2 ring-white`} />
-                {idx < flowDocuments.length - 1 && (
-                  <div className="w-0.5 flex-1 min-h-[2rem] bg-gray-200" />
-                )}
-              </div>
+            return (
+              <button
+                key={doc.id}
+                onClick={() => onSelect(idx)}
+                title={doc.document_title}
+                className={`
+                  flex-1 min-w-0 h-14 rounded-lg transition-all cursor-pointer
+                  flex flex-col items-center justify-center gap-0.5
+                  ${isSelected
+                    ? `${colors.selectedBg} ring-2 ${colors.ring} scale-[1.08] shadow-lg z-10`
+                    : `${colors.bg} ${colors.hover} shadow`}
+                `}
+              >
+                <span className={`text-xs font-bold leading-none ${isSelected ? colors.selectedText : colors.text}`}>
+                  {label}
+                </span>
+                <span className={`text-[9px] leading-none ${isSelected ? 'text-white/70' : `${colors.text} opacity-50`}`}>
+                  {idx + 1}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
-              {/* Document card */}
-              <div className="flex-1 bg-white shadow-sm rounded-lg border border-gray-200 p-3 mb-2 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-900 truncate max-w-[180px]" title={doc.document_title}>
-                    {doc.document_title}
-                  </span>
-                  <StatusBadge status={doc.status} />
-                </div>
-                <div className="text-xs text-gray-500 font-mono mb-1.5">{doc.jsonld_type}</div>
-                {layerLabel && (
-                  <div className="flex items-center gap-1.5">
-                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${isRequest ? 'bg-indigo-400' : 'bg-violet-400'}`} />
-                    <span className="text-xs text-gray-600">
-                      {isRequest ? 'Req' : 'Res'} &rarr; {layerLabel}
-                    </span>
-                  </div>
-                )}
-                <div className="text-xs text-gray-400 mt-1">{timeAgo(doc.created_at)}</div>
-              </div>
-            </div>
-          </div>
-        )
-      })}
+      {/* Row 2: Detail bar for selected document */}
+      {selected !== null && flowDocuments[selected] && (
+        <FlowDocumentDetail doc={flowDocuments[selected]} />
+      )}
+    </div>
+  )
+}
+
+function FlowDocumentDetail({ doc }) {
+  const pos = doc.traceable_type ? TRACEABLE_POSITION[doc.traceable_type] : null
+  const layerLabel = pos !== null && pos !== undefined ? LAYER_LABELS[pos] : null
+  const isRequest = pos !== null && pos <= 4
+  const colors = BLOCK_STATUS_COLORS[doc.status] || { bg: 'bg-gray-400' }
+
+  return (
+    <div className="bg-white shadow rounded-lg border border-gray-200 px-4 py-3 flex items-center gap-4">
+      <div className={`w-3 h-3 rounded-full flex-shrink-0 ${colors.bg}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-sm font-semibold text-gray-900 truncate">{doc.document_title}</span>
+          <StatusBadge status={doc.status} />
+        </div>
+        <div className="text-xs text-gray-500 font-mono">{doc.jsonld_type}</div>
+      </div>
+      {layerLabel ? (
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className={`inline-block w-2 h-2 rounded-full ${isRequest ? 'bg-indigo-400' : 'bg-violet-400'}`} />
+          <span className="text-xs font-medium text-gray-700">
+            {isRequest ? 'Req' : 'Res'} &rarr; {layerLabel}
+          </span>
+        </div>
+      ) : (
+        <span className="text-xs text-gray-400 flex-shrink-0">Unmatched</span>
+      )}
+      <span className="text-xs text-gray-400 flex-shrink-0">{timeAgo(doc.created_at)}</span>
     </div>
   )
 }
@@ -169,6 +222,13 @@ function timeAgo(dateStr) {
 }
 
 export default function DashboardShow({ puml, flow_documents, request_layers, response_layers, recent_ingestions }) {
+  const [selectedDoc, setSelectedDoc] = useState(0)
+
+  const docs = flow_documents || []
+  const selectedTraceableType = docs[selectedDoc]?.traceable_type
+  const highlightedLayer = selectedTraceableType ? TRACEABLE_TO_LAYER[selectedTraceableType] : null
+  const highlightedParticipant = selectedTraceableType ? TRACEABLE_TO_PARTICIPANT[selectedTraceableType] : null
+
   return (
     <div className="space-y-8">
       <div>
@@ -176,78 +236,76 @@ export default function DashboardShow({ puml, flow_documents, request_layers, re
         <p className="mt-1 text-sm text-gray-500">Request flow overview — User to Provider and back</p>
       </div>
 
-      {/* Two-column layout: Document flow (left) + Flow layers (right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+      {/* Incoming Documents: block strip + detail bar */}
+      <div>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">Incoming Documents</h2>
+        <p className="text-sm text-gray-500 mb-3">JSON-LD ingestion flow — click a block to inspect</p>
+        <FlowDocumentStrip
+          flowDocuments={flow_documents || []}
+          selected={selectedDoc}
+          onSelect={setSelectedDoc}
+        />
+      </div>
 
-        {/* Left column: Incoming JSON-LD documents flowing top-to-bottom */}
-        <div>
-          <h2 className="text-lg font-medium text-gray-900 mb-1">Incoming Documents</h2>
-          <p className="text-sm text-gray-500 mb-4">JSON-LD ingestion flow</p>
-          <FlowDocumentColumn flowDocuments={flow_documents || []} />
+      {/* A. PlantUML Sequence Diagram */}
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">Request Flow Diagram</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Each step represents a potential point of delay, cost, or error</p>
         </div>
+        <div className="p-6">
+          <PlantUmlDiagram pumlContent={puml} highlightParticipant={highlightedParticipant} />
+        </div>
+      </div>
 
-        {/* Right column: Existing flow content */}
-        <div className="space-y-8">
+      {/* B. Request Flow Layer Cards */}
+      <div>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">Request Flow</h2>
+        <p className="text-sm text-gray-500 mb-4">User &rarr; Device &rarr; Service &rarr; Middleware &rarr; Provider</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {Object.keys(REQUEST_LAYER_CONFIG).map(key => (
+            <LayerCard key={key} layerKey={key} data={request_layers[key]} config={REQUEST_LAYER_CONFIG}
+              highlighted={highlightedLayer?.section === 'request' && highlightedLayer?.key === key} />
+          ))}
+        </div>
+      </div>
 
-          {/* A. PlantUML Sequence Diagram */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Request Flow Diagram</h2>
-              <p className="text-sm text-gray-500 mt-0.5">Each step represents a potential point of delay, cost, or error</p>
-            </div>
-            <div className="p-6">
-              <PlantUmlDiagram pumlContent={puml} />
-            </div>
-          </div>
+      {/* C. Response Flow Layer Cards */}
+      <div>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">Response Flow</h2>
+        <p className="text-sm text-gray-500 mb-4">Provider &rarr; Middleware &rarr; Service &rarr; Device &rarr; User</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {Object.keys(RESPONSE_LAYER_CONFIG).map(key => (
+            <LayerCard key={`resp-${key}`} layerKey={key} data={response_layers[key]} config={RESPONSE_LAYER_CONFIG}
+              highlighted={highlightedLayer?.section === 'response' && highlightedLayer?.key === key} />
+          ))}
+        </div>
+      </div>
 
-          {/* B. Request Flow Layer Cards */}
-          <div>
-            <h2 className="text-lg font-medium text-gray-900 mb-1">Request Flow</h2>
-            <p className="text-sm text-gray-500 mb-4">User &rarr; Device &rarr; Service &rarr; Middleware &rarr; Provider</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {Object.keys(REQUEST_LAYER_CONFIG).map(key => (
-                <LayerCard key={key} layerKey={key} data={request_layers[key]} config={REQUEST_LAYER_CONFIG} />
-              ))}
-            </div>
-          </div>
-
-          {/* C. Response Flow Layer Cards */}
-          <div>
-            <h2 className="text-lg font-medium text-gray-900 mb-1">Response Flow</h2>
-            <p className="text-sm text-gray-500 mb-4">Provider &rarr; Middleware &rarr; Service &rarr; Device &rarr; User</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {Object.keys(RESPONSE_LAYER_CONFIG).map(key => (
-                <LayerCard key={`resp-${key}`} layerKey={key} data={response_layers[key]} config={RESPONSE_LAYER_CONFIG} />
-              ))}
-            </div>
-          </div>
-
-          {/* D. Recent Activity */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Recent Ingestions</h2>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {recent_ingestions.length > 0 ? (
-                recent_ingestions.map(ing => (
-                  <div key={ing.id} className="px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-gray-900 capitalize">{ing.direction}</span>
-                      <StatusBadge status={ing.status} />
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {ing.documents_processed}/{ing.documents_count} docs
-                      <span className="ml-3 text-gray-400">{timeAgo(ing.created_at)}</span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="px-6 py-8 text-center text-sm text-gray-500">
-                  No ingestions yet. Upload files and trigger an ingestion to get started.
+      {/* D. Recent Activity */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">Recent Ingestions</h2>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {recent_ingestions.length > 0 ? (
+            recent_ingestions.map(ing => (
+              <div key={ing.id} className="px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-gray-900 capitalize">{ing.direction}</span>
+                  <StatusBadge status={ing.status} />
                 </div>
-              )}
+                <div className="text-sm text-gray-500">
+                  {ing.documents_processed}/{ing.documents_count} docs
+                  <span className="ml-3 text-gray-400">{timeAgo(ing.created_at)}</span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="px-6 py-8 text-center text-sm text-gray-500">
+              No ingestions yet. Upload files and trigger an ingestion to get started.
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
