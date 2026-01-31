@@ -49,37 +49,93 @@ export default function PlantUmlDiagram({ pumlContent, highlightParticipant }) {
 
     if (!highlightParticipant) return
 
-    // Find participant header text nodes matching the label
+    const addHighlight = (targetEl) => {
+      let x, y, width, height, parent
+      if (targetEl.tagName === 'rect') {
+        x = parseFloat(targetEl.getAttribute('x')) - 4
+        y = parseFloat(targetEl.getAttribute('y')) - 4
+        width = parseFloat(targetEl.getAttribute('width')) + 8
+        height = parseFloat(targetEl.getAttribute('height')) + 8
+        parent = targetEl.parentNode
+      } else if (targetEl.tagName === 'polygon') {
+        const points = targetEl.getAttribute('points')
+        if (!points) return
+        const coords = points.trim().split(/[\s,]+/).map(Number)
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        for (let i = 0; i < coords.length; i += 2) {
+          minX = Math.min(minX, coords[i])
+          maxX = Math.max(maxX, coords[i])
+          minY = Math.min(minY, coords[i + 1])
+          maxY = Math.max(maxY, coords[i + 1])
+        }
+        x = minX - 4; y = minY - 4
+        width = (maxX - minX) + 8; height = (maxY - minY) + 8
+        parent = targetEl.parentNode
+      } else return
+
+      const hl = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      hl.setAttribute('x', x)
+      hl.setAttribute('y', y)
+      hl.setAttribute('width', width)
+      hl.setAttribute('height', height)
+      hl.setAttribute('rx', '6')
+      hl.setAttribute('ry', '6')
+      hl.setAttribute('fill', 'rgba(99, 102, 241, 0.15)')
+      hl.setAttribute('stroke', '#4F46E5')
+      hl.setAttribute('stroke-width', '2.5')
+      hl.setAttribute('class', 'participant-highlight')
+      parent.insertBefore(hl, targetEl)
+    }
+
+    const highlighted = new Set()
     const textNodes = svg.querySelectorAll('text')
+
+    // 1. Find and highlight participant header/footer boxes, and record x-center
+    let participantCenterX = null
     for (const textNode of textNodes) {
       const content = textNode.textContent.trim()
       if (content === highlightParticipant) {
-        // The participant box is typically the preceding rect sibling or parent group rect
         const parent = textNode.closest('g') || textNode.parentElement
         const rect = parent ? parent.querySelector('rect') : null
-
-        if (rect) {
-          const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-          const x = parseFloat(rect.getAttribute('x')) - 4
-          const y = parseFloat(rect.getAttribute('y')) - 4
-          const width = parseFloat(rect.getAttribute('width')) + 8
-          const height = parseFloat(rect.getAttribute('height')) + 8
-
-          highlight.setAttribute('x', x)
-          highlight.setAttribute('y', y)
-          highlight.setAttribute('width', width)
-          highlight.setAttribute('height', height)
-          highlight.setAttribute('rx', '6')
-          highlight.setAttribute('ry', '6')
-          highlight.setAttribute('fill', 'rgba(99, 102, 241, 0.15)')
-          highlight.setAttribute('stroke', '#4F46E5')
-          highlight.setAttribute('stroke-width', '2.5')
-          highlight.setAttribute('class', 'participant-highlight')
-
-          rect.parentNode.insertBefore(highlight, rect)
+        if (rect && !highlighted.has(rect)) {
+          highlighted.add(rect)
+          addHighlight(rect)
+          if (participantCenterX === null) {
+            participantCenterX = parseFloat(rect.getAttribute('x')) + parseFloat(rect.getAttribute('width')) / 2
+          }
         }
-        break
       }
+    }
+
+    // 2. Find note polygons and rects horizontally aligned with the participant
+    if (participantCenterX !== null) {
+      svg.querySelectorAll('polygon').forEach(polygon => {
+        const points = polygon.getAttribute('points')
+        if (!points) return
+        const coords = points.trim().split(/[\s,]+/).map(Number)
+        let minX = Infinity, maxX = -Infinity
+        for (let i = 0; i < coords.length; i += 2) {
+          minX = Math.min(minX, coords[i])
+          maxX = Math.max(maxX, coords[i])
+        }
+        const polyCenterX = (minX + maxX) / 2
+        if (Math.abs(polyCenterX - participantCenterX) < 30 && !highlighted.has(polygon)) {
+          highlighted.add(polygon)
+          addHighlight(polygon)
+        }
+      })
+
+      svg.querySelectorAll('rect').forEach(rect => {
+        if (highlighted.has(rect)) return
+        const rx = parseFloat(rect.getAttribute('x'))
+        const rw = parseFloat(rect.getAttribute('width'))
+        if (isNaN(rx) || isNaN(rw)) return
+        const rectCenterX = rx + rw / 2
+        if (Math.abs(rectCenterX - participantCenterX) < 30) {
+          highlighted.add(rect)
+          addHighlight(rect)
+        }
+      })
     }
   }, [svgMarkup, highlightParticipant])
 
