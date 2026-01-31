@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_210001) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
   create_table "container_runtimes", force: :cascade do |t|
     t.boolean "active", default: true
     t.text "connection_options"
@@ -267,6 +267,108 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210001) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_magentic_bazaar_uml_diagrams_on_document_id"
+  end
+
+  create_table "request_devices", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "device_type", null: false
+    t.string "name", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_request_devices_on_name", unique: true
+  end
+
+  create_table "request_middlewares", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "middleware_type", null: false
+    t.string "name", null: false
+    t.integer "position"
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_request_middlewares_on_name", unique: true
+  end
+
+  create_table "request_providers", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "provider_type", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_request_providers_on_name", unique: true
+  end
+
+  create_table "request_services", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "service_type", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_request_services_on_name", unique: true
+  end
+
+  create_table "request_users", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.string "user_type", null: false
+    t.index ["name"], name: "index_request_users_on_name", unique: true
+  end
+
+  create_table "response_devices", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "device_type", null: false
+    t.string "name", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_response_devices_on_name", unique: true
+  end
+
+  create_table "response_middlewares", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "middleware_type", null: false
+    t.string "name", null: false
+    t.integer "position"
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_response_middlewares_on_name", unique: true
+  end
+
+  create_table "response_providers", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "provider_type", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_response_providers_on_name", unique: true
+  end
+
+  create_table "response_services", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "service_type", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_response_services_on_name", unique: true
+  end
+
+  create_table "response_users", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "status", default: "active"
+    t.datetime "updated_at", null: false
+    t.string "user_type", null: false
+    t.index ["name"], name: "index_response_users_on_name", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
