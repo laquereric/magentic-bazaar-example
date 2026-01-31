@@ -32,22 +32,22 @@ gem "rails-multistore", git: "https://github.com/laquereric/rails-multistore.git
 gem "rails-inertia-mdx", path: "../rails-inertia-mdx", require: "rails_inertia_mdx"
 
 # PlantUML sequence diagram DSL + React SVG highlighting
-gem "puml-work", path: "../puml-work"
+gem "puml-work", path: "../puml-work", require: "puml_work"
 
-# LLM provider engine — unified interface to multiple LLM providers
+# LLM provider engine -- unified interface to multiple LLM providers
 gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git", ref: "dff5c5c"
 gem "anthropic"
 gem "ruby_llm"
 
-# Hosting provider — unified interface to hosting APIs
+# Hosting provider -- unified interface to hosting APIs
 gem "hosting", git: "https://github.com/laquereric/hosting.git"
 gem "hosting-hostinger", git: "https://github.com/laquereric/hosting-hostinger.git"
 
-# Container runtime — unified interface to OCI container runtimes
+# Container runtime -- unified interface to OCI container runtimes
 gem "container", git: "https://github.com/laquereric/container-ruby.git"
 gem "container-docker", git: "https://github.com/laquereric/container-docker-ruby.git"
 
-# OpenTelemetry — distributed tracing for request/response flows
+# OpenTelemetry -- distributed tracing for request/response flows
 gem "opentelemetry-sdk", "~> 1.4"
 gem "opentelemetry-exporter-otlp", "~> 0.29"
 gem "opentelemetry-instrumentation-rails", "~> 0.34"
