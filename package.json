@@ -2,13 +2,14 @@
   "name": "magentic-bazaar-example",
   "private": true,
   "scripts": {
-    "build": "esbuild app/javascript/inertia.jsx --bundle --sourcemap --outdir=app/assets/builds --loader:.jsx=jsx --loader:.js=jsx"
+    "build": "NODE_PATH=./node_modules esbuild app/javascript/inertia.jsx --bundle --sourcemap --outdir=app/assets/builds --loader:.jsx=jsx --loader:.js=jsx"
   },
   "dependencies": {
     "@inertiajs/react": "^2.0",
     "@mdx-js/react": "^3.0",
     "mdx-bundler": "^10.0",
     "plantuml-encoder": "^1.4.0",
+    "puml-work": "file:../puml-work/node",
     "react": "^19.0",
     "react-dom": "^19.0"
   },

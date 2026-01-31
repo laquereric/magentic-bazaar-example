@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import PlantUmlDiagram from '../PlantUmlDiagram'
+import { PumlDiagram } from 'puml-work'
 
 export default function UMLPreview({ title, diagramType, subtype, pumlContent }) {
   const [showSource, setShowSource] = useState(false)
@@ -51,7 +51,7 @@ export default function UMLPreview({ title, diagramType, subtype, pumlContent })
 
       {!showSource && (
         <div className="p-4">
-          <PlantUmlDiagram pumlContent={pumlContent} />
+          <PumlDiagram pumlContent={pumlContent} />
         </div>
       )}
     </div>

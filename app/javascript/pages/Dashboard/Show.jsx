@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import PlantUmlDiagram from '../../components/PlantUmlDiagram'
+import { PumlDiagram } from 'puml-work'
 
 const REQUEST_LAYER_CONFIG = {
   users:       { label: 'Users',      color: 'indigo', icon: 'U' },
@@ -276,7 +276,7 @@ export default function DashboardShow({ puml_request, puml_response, flow_docume
             <p className="text-sm text-gray-500 mt-0.5">User &rarr; Device &rarr; Service &rarr; Middleware &rarr; Provider</p>
           </div>
           <div className="p-6">
-            <PlantUmlDiagram pumlContent={puml_request} highlightParticipant={highlightedParticipant} />
+            <PumlDiagram pumlContent={puml_request} highlightParticipant={highlightedParticipant} />
           </div>
         </div>
       )}
@@ -287,7 +287,7 @@ export default function DashboardShow({ puml_request, puml_response, flow_docume
             <p className="text-sm text-gray-500 mt-0.5">Provider &rarr; Middleware &rarr; Service &rarr; Device &rarr; User</p>
           </div>
           <div className="p-6">
-            <PlantUmlDiagram pumlContent={puml_response} highlightParticipant={highlightedParticipant} />
+            <PumlDiagram pumlContent={puml_response} highlightParticipant={highlightedParticipant} />
           </div>
         </div>
       )}

@@ -31,6 +31,9 @@ gem "rails-multistore", git: "https://github.com/laquereric/rails-multistore.git
 # MDX compilation and rendering for Inertia.js pages
 gem "rails-inertia-mdx", path: "../rails-inertia-mdx", require: "rails_inertia_mdx"
 
+# PlantUML sequence diagram DSL + React SVG highlighting
+gem "puml-work", path: "../puml-work"
+
 # LLM provider engine — unified interface to multiple LLM providers
 gem "llm_engine", git: "https://github.com/laquereric/llm-engine-gem.git", ref: "dff5c5c"
 gem "anthropic"

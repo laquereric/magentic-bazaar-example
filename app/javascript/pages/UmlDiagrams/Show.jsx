@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import MdxRenderer from '../../components/MdxRenderer'
-import PlantUmlDiagram from '../../components/PlantUmlDiagram'
+import { PumlDiagram } from 'puml-work'
 
 function CopyButton({ text, label = 'Copy to Clipboard' }) {
   const [copied, setCopied] = useState(false)
@@ -94,7 +94,7 @@ export default function UmlDiagramsShow({ uml_diagram, document, mdx }) {
         </div>
         <div className="p-6">
           {tab === 'diagram' && (
-            <PlantUmlDiagram pumlContent={uml_diagram.puml_content} />
+            <PumlDiagram pumlContent={uml_diagram.puml_content} />
           )}
           {tab === 'rendered' && (
             hasRendered ? (

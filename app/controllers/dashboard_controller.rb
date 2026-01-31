@@ -104,108 +104,53 @@ class DashboardController < ApplicationController
     }
   end
 
-  def puml_skinparams
-    <<~SKIN
-      skinparam backgroundColor #FEFEFE
-      skinparam sequenceArrowThickness 2
-      skinparam roundcorner 10
-      skinparam sequenceParticipantBorderColor #4F46E5
-      skinparam sequenceArrowColor #6366F1
-      skinparam sequenceLifeLineBorderColor #A5B4FC
-      skinparam noteBorderColor #C7D2FE
-      skinparam noteBackgroundColor #EEF2FF
-    SKIN
-  end
-
   def build_puml_request(req_users, req_devices, req_services, req_middlewares, req_providers)
     act = ->(col) { col.select(&:active).map(&:name) }
 
-    <<~PUML
-      @startuml
-      #{puml_skinparams}
-      participant "User" as U
-      participant "Device" as D
-      participant "Service" as S
-      participant "Middleware" as M
-      participant "Provider" as P
+    build_sequence_diagram do |d|
+      d.participant "User",       as: "U"
+      d.participant "Device",     as: "D"
+      d.participant "Service",    as: "S"
+      d.participant "Middleware",  as: "M"
+      d.participant "Provider",   as: "P"
 
-      U -> D : Select device
-      D -> S : Route to service
-      S -> M : Apply middleware
-      M -> P : Fulfill request
+      d.blank_line
+      d.message "U", "D", "Select device"
+      d.message "D", "S", "Route to service"
+      d.message "S", "M", "Apply middleware"
+      d.message "M", "P", "Fulfill request"
 
-      note over U
-        **Request Users**
-        #{act.(req_users).join("\\n")}
-      end note
-
-      note over D
-        **Request Devices**
-        #{act.(req_devices).join("\\n")}
-      end note
-
-      note over S
-        **Request Services**
-        #{act.(req_services).join("\\n")}
-      end note
-
-      note over M
-        **Request Middleware**
-        #{act.(req_middlewares).join("\\n")}
-      end note
-
-      note over P
-        **Request Providers**
-        #{act.(req_providers).join("\\n")}
-      end note
-
-      @enduml
-    PUML
+      d.blank_line
+      d.note "U", title: "Request Users",      items: act.(req_users)
+      d.note "D", title: "Request Devices",    items: act.(req_devices)
+      d.note "S", title: "Request Services",   items: act.(req_services)
+      d.note "M", title: "Request Middleware",  items: act.(req_middlewares)
+      d.note "P", title: "Request Providers",   items: act.(req_providers)
+    end
   end
 
   def build_puml_response(res_providers, res_middlewares, res_services, res_devices, res_users)
     act = ->(col) { col.select(&:active).map(&:name) }
 
-    <<~PUML
-      @startuml
-      #{puml_skinparams}
-      participant "Provider" as P
-      participant "Middleware" as M
-      participant "Service" as S
-      participant "Device" as D
-      participant "User" as U
+    build_sequence_diagram do |d|
+      d.participant "Provider",   as: "P"
+      d.participant "Middleware",  as: "M"
+      d.participant "Service",    as: "S"
+      d.participant "Device",     as: "D"
+      d.participant "User",       as: "U"
 
-      P --> M : Provider response
-      M --> S : Processed response
-      S --> D : Service result
-      D --> U : Final response
+      d.blank_line
+      d.message "P", "M", "Provider response",  style: :dashed
+      d.message "M", "S", "Processed response",  style: :dashed
+      d.message "S", "D", "Service result",       style: :dashed
+      d.message "D", "U", "Final response",       style: :dashed
 
-      note over P
-        **Response Providers**
-        #{act.(res_providers).join("\\n")}
-      end note
-
-      note over M
-        **Response Middleware**
-        #{act.(res_middlewares).join("\\n")}
-      end note
-
-      note over S
-        **Response Services**
-        #{act.(res_services).join("\\n")}
-      end note
-
-      note over D
-        **Response Devices**
-        #{act.(res_devices).join("\\n")}
-      end note
-
-      note over U
-        **Response Users**
-        #{act.(res_users).join("\\n")}
-      end note
-
-      @enduml
-    PUML
+      d.blank_line
+      d.note "P", title: "Response Providers",   items: act.(res_providers)
+      d.note "M", title: "Response Middleware",  items: act.(res_middlewares)
+      d.note "S", title: "Response Services",   items: act.(res_services)
+      d.note "D", title: "Response Devices",    items: act.(res_devices)
+      d.note "U", title: "Response Users",      items: act.(res_users)
+    end
   end
 end
