@@ -221,13 +221,16 @@ function timeAgo(dateStr) {
   return `${days}d ago`
 }
 
-export default function DashboardShow({ puml, flow_documents, request_layers, response_layers, recent_ingestions }) {
-  const [selectedDoc, setSelectedDoc] = useState(0)
+export default function DashboardShow({ puml_request, puml_response, flow_documents, request_layers, response_layers, recent_ingestions }) {
+  const [selectedDoc, setSelectedDoc] = useState(null)
+  const [docsExpanded, setDocsExpanded] = useState(false)
 
   const docs = flow_documents || []
-  const selectedTraceableType = docs[selectedDoc]?.traceable_type
+  const hasSelection = docsExpanded && selectedDoc !== null
+  const selectedTraceableType = hasSelection ? docs[selectedDoc]?.traceable_type : null
   const highlightedLayer = selectedTraceableType ? TRACEABLE_TO_LAYER[selectedTraceableType] : null
   const highlightedParticipant = selectedTraceableType ? TRACEABLE_TO_PARTICIPANT[selectedTraceableType] : null
+  const selectedFlow = highlightedLayer?.section || null
 
   return (
     <div className="space-y-8">
@@ -236,51 +239,76 @@ export default function DashboardShow({ puml, flow_documents, request_layers, re
         <p className="mt-1 text-sm text-gray-500">Request flow overview — User to Provider and back</p>
       </div>
 
-      {/* Incoming Documents: block strip + detail bar */}
+      {/* Incoming Documents: collapsed title button / expanded strip + detail */}
       <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">Incoming Documents</h2>
-        <p className="text-sm text-gray-500 mb-3">JSON-LD ingestion flow — click a block to inspect</p>
-        <FlowDocumentStrip
-          flowDocuments={flow_documents || []}
-          selected={selectedDoc}
-          onSelect={setSelectedDoc}
-        />
+        <button
+          onClick={() => { setDocsExpanded(prev => !prev); setSelectedDoc(null) }}
+          className="flex items-center gap-2 group cursor-pointer"
+        >
+          <svg
+            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${docsExpanded ? 'rotate-90' : ''}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+          <h2 className="text-lg font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">
+            Incoming Documents
+          </h2>
+          <span className="text-sm text-gray-400 ml-1">({docs.length})</span>
+        </button>
+        {docsExpanded && (
+          <>
+            <p className="text-sm text-gray-500 mt-1 mb-3 ml-6">JSON-LD ingestion flow — click a block to inspect</p>
+            <FlowDocumentStrip
+              flowDocuments={docs}
+              selected={selectedDoc}
+              onSelect={setSelectedDoc}
+            />
+          </>
+        )}
       </div>
 
-      {/* A. PlantUML Sequence Diagram */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Request Flow Diagram</h2>
-          <p className="text-sm text-gray-500 mt-0.5">Each step represents a potential point of delay, cost, or error</p>
+      {/* A. PlantUML Sequence Diagram — show request or response based on selected document */}
+      {hasSelection && selectedFlow === 'request' && (
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Request Flow Diagram</h2>
+            <p className="text-sm text-gray-500 mt-0.5">User &rarr; Device &rarr; Service &rarr; Middleware &rarr; Provider</p>
+          </div>
+          <div className="p-6">
+            <PlantUmlDiagram pumlContent={puml_request} highlightParticipant={highlightedParticipant} />
+          </div>
         </div>
-        <div className="p-6">
-          <PlantUmlDiagram pumlContent={puml} highlightParticipant={highlightedParticipant} />
+      )}
+      {hasSelection && selectedFlow === 'response' && (
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Response Flow Diagram</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Provider &rarr; Middleware &rarr; Service &rarr; Device &rarr; User</p>
+          </div>
+          <div className="p-6">
+            <PlantUmlDiagram pumlContent={puml_response} highlightParticipant={highlightedParticipant} />
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* B. Request Flow Layer Cards */}
-      <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">Request Flow</h2>
-        <p className="text-sm text-gray-500 mb-4">User &rarr; Device &rarr; Service &rarr; Middleware &rarr; Provider</p>
+      {/* B. Layer Cards — show only the matching flow when a document is selected */}
+      {hasSelection && selectedFlow === 'request' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {Object.keys(REQUEST_LAYER_CONFIG).map(key => (
             <LayerCard key={key} layerKey={key} data={request_layers[key]} config={REQUEST_LAYER_CONFIG}
               highlighted={highlightedLayer?.section === 'request' && highlightedLayer?.key === key} />
           ))}
         </div>
-      </div>
-
-      {/* C. Response Flow Layer Cards */}
-      <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">Response Flow</h2>
-        <p className="text-sm text-gray-500 mb-4">Provider &rarr; Middleware &rarr; Service &rarr; Device &rarr; User</p>
+      )}
+      {hasSelection && selectedFlow === 'response' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {Object.keys(RESPONSE_LAYER_CONFIG).map(key => (
             <LayerCard key={`resp-${key}`} layerKey={key} data={response_layers[key]} config={RESPONSE_LAYER_CONFIG}
               highlighted={highlightedLayer?.section === 'response' && highlightedLayer?.key === key} />
           ))}
         </div>
-      </div>
+      )}
 
       {/* D. Recent Activity */}
       <div className="bg-white shadow rounded-lg">

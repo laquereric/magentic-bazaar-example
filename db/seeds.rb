@@ -144,7 +144,7 @@ puts "Seeded #{ResponseUser.count} response users"
 # --- JSON-LD Flow Documents ---
 # Each document arrives, gets ingested, and is matched 1:1 to a flow model record.
 
-# 5 matched — complete request flow chain with known models
+# 7 matched — 5 request flow + 2 response flow
 JSONLD_MATCHED = [
   {
     uuid7: "fld0001",
@@ -210,34 +210,37 @@ JSONLD_MATCHED = [
       "description" => "Anthropic API endpoint fulfilling the LLM request"
     },
     model: -> { RequestProvider.find_by!(name: "Anthropic API") }
-  }
-].freeze
-
-# 5 pending — arrived but not yet matched (unknown types, missing models, awaiting processing)
-JSONLD_PENDING = [
+  },
   {
     uuid7: "fld0006",
-    title: "Unknown Agent Trace",
-    jsonld_type: "schema:AgentRuntime",
+    title: "Anthropic Response Provider Trace",
+    jsonld_type: "schema:ResponseProvider",
     payload: {
       "@context" => "https://magentic-bazaar.example/schema",
-      "@type"    => "schema:AgentRuntime",
-      "name"     => "Autonomous Agent v2",
-      "description" => "Agent runtime with no matching flow model"
-    }
+      "@type"    => "schema:ResponseProvider",
+      "name"     => "Anthropic Response",
+      "provider_type" => "api",
+      "description" => "Response payload from Anthropic API"
+    },
+    model: -> { ResponseProvider.find_by!(name: "Anthropic Response") }
   },
   {
     uuid7: "fld0007",
-    title: "Webhook Event Trace",
-    jsonld_type: "schema:WebhookEvent",
+    title: "Response Validator Middleware Trace",
+    jsonld_type: "schema:ResponseMiddleware",
     payload: {
       "@context" => "https://magentic-bazaar.example/schema",
-      "@type"    => "schema:WebhookEvent",
-      "name"     => "GitHub Push Event",
-      "event_type" => "push",
-      "description" => "Inbound webhook with no flow model mapping"
-    }
-  },
+      "@type"    => "schema:ResponseMiddleware",
+      "name"     => "Response Validator",
+      "middleware_type" => "validation",
+      "description" => "Validates response schema and content safety"
+    },
+    model: -> { ResponseMiddleware.find_by!(name: "Response Validator") }
+  }
+].freeze
+
+# 3 pending — arrived but not yet matched (unknown types, missing models, awaiting processing)
+JSONLD_PENDING = [
   {
     uuid7: "fld0008",
     title: "Billing Metric Trace",
