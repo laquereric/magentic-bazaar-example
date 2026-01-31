@@ -140,3 +140,187 @@ puts "Seeded #{ResponseDevice.count} response devices"
   end
 end
 puts "Seeded #{ResponseUser.count} response users"
+
+# --- JSON-LD Flow Documents ---
+# Each document arrives, gets ingested, and is matched 1:1 to a flow model record.
+
+# 5 matched — complete request flow chain with known models
+JSONLD_MATCHED = [
+  {
+    uuid7: "fld0001",
+    title: "Developer User Trace",
+    jsonld_type: "schema:RequestUser",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:RequestUser",
+      "name"     => "Developer",
+      "user_type"=> "individual",
+      "description" => "Primary developer initiating LLM requests"
+    },
+    model: -> { RequestUser.find_by!(name: "Developer") }
+  },
+  {
+    uuid7: "fld0002",
+    title: "MacBook Pro Device Trace",
+    jsonld_type: "schema:RequestDevice",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:RequestDevice",
+      "name"     => "MacBook Pro",
+      "device_type" => "laptop",
+      "description" => "Development laptop routing requests to services"
+    },
+    model: -> { RequestDevice.find_by!(name: "MacBook Pro") }
+  },
+  {
+    uuid7: "fld0003",
+    title: "Claude LLM Service Trace",
+    jsonld_type: "schema:RequestService",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:RequestService",
+      "name"     => "Claude LLM",
+      "service_type" => "llm",
+      "description" => "Anthropic Claude large language model service"
+    },
+    model: -> { RequestService.find_by!(name: "Claude LLM") }
+  },
+  {
+    uuid7: "fld0004",
+    title: "API Key Auth Middleware Trace",
+    jsonld_type: "schema:RequestMiddleware",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:RequestMiddleware",
+      "name"     => "API Key Auth",
+      "middleware_type" => "authentication",
+      "description" => "Validates API key before forwarding to provider"
+    },
+    model: -> { RequestMiddleware.find_by!(name: "API Key Auth") }
+  },
+  {
+    uuid7: "fld0005",
+    title: "Anthropic API Provider Trace",
+    jsonld_type: "schema:RequestProvider",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:RequestProvider",
+      "name"     => "Anthropic API",
+      "provider_type" => "api",
+      "description" => "Anthropic API endpoint fulfilling the LLM request"
+    },
+    model: -> { RequestProvider.find_by!(name: "Anthropic API") }
+  }
+].freeze
+
+# 5 pending — arrived but not yet matched (unknown types, missing models, awaiting processing)
+JSONLD_PENDING = [
+  {
+    uuid7: "fld0006",
+    title: "Unknown Agent Trace",
+    jsonld_type: "schema:AgentRuntime",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:AgentRuntime",
+      "name"     => "Autonomous Agent v2",
+      "description" => "Agent runtime with no matching flow model"
+    }
+  },
+  {
+    uuid7: "fld0007",
+    title: "Webhook Event Trace",
+    jsonld_type: "schema:WebhookEvent",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:WebhookEvent",
+      "name"     => "GitHub Push Event",
+      "event_type" => "push",
+      "description" => "Inbound webhook with no flow model mapping"
+    }
+  },
+  {
+    uuid7: "fld0008",
+    title: "Billing Metric Trace",
+    jsonld_type: "schema:BillingMetric",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:BillingMetric",
+      "name"     => "Token Usage Report",
+      "metric_type" => "cost",
+      "description" => "Cost tracking document awaiting model assignment"
+    }
+  },
+  {
+    uuid7: "fld0009",
+    title: "Guardrail Policy Trace",
+    jsonld_type: "schema:GuardrailPolicy",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:GuardrailPolicy",
+      "name"     => "Content Safety Filter",
+      "policy_type" => "safety",
+      "description" => "Safety policy document pending middleware match"
+    }
+  },
+  {
+    uuid7: "fld0010",
+    title: "Telemetry Snapshot Trace",
+    jsonld_type: "schema:TelemetrySnapshot",
+    payload: {
+      "@context" => "https://magentic-bazaar.example/schema",
+      "@type"    => "schema:TelemetrySnapshot",
+      "name"     => "Latency Percentiles",
+      "snapshot_type" => "latency",
+      "description" => "OTEL telemetry export with no target model"
+    }
+  }
+].freeze
+
+# Seed matched documents
+JSONLD_MATCHED.each_with_index do |seed, idx|
+  doc = MagenticBazaar::Document.find_or_initialize_by(uuid7: seed[:uuid7])
+  doc.update!(
+    title: seed[:title],
+    original_filename: "#{seed[:title].parameterize}__#{seed[:uuid7]}.jsonld",
+    file_type: "JSON-LD",
+    content_hash: Digest::SHA256.hexdigest(seed[:payload].to_json),
+    raw_content: JSON.pretty_generate(seed[:payload]),
+    word_count: seed[:payload].to_json.split(/\s+/).length,
+    status: "ingested"
+  )
+
+  fd = FlowDocument.find_or_initialize_by(document: doc)
+  traceable = seed[:model].call
+  fd.update!(
+    jsonld_type: seed[:jsonld_type],
+    jsonld_payload: JSON.pretty_generate(seed[:payload]),
+    traceable: traceable,
+    status: "matched",
+    matched_at: Time.current - (10 - idx).minutes
+  )
+end
+
+# Seed pending (unmatched) documents
+JSONLD_PENDING.each_with_index do |seed, idx|
+  doc = MagenticBazaar::Document.find_or_initialize_by(uuid7: seed[:uuid7])
+  doc.update!(
+    title: seed[:title],
+    original_filename: "#{seed[:title].parameterize}__#{seed[:uuid7]}.jsonld",
+    file_type: "JSON-LD",
+    content_hash: Digest::SHA256.hexdigest(seed[:payload].to_json),
+    raw_content: JSON.pretty_generate(seed[:payload]),
+    word_count: seed[:payload].to_json.split(/\s+/).length,
+    status: "ingested"
+  )
+
+  fd = FlowDocument.find_or_initialize_by(document: doc)
+  fd.update!(
+    jsonld_type: seed[:jsonld_type],
+    jsonld_payload: JSON.pretty_generate(seed[:payload]),
+    traceable: nil,
+    status: "pending",
+    matched_at: nil
+  )
+end
+
+puts "Seeded #{FlowDocument.matched.count} matched + #{FlowDocument.pending.count} pending flow documents"

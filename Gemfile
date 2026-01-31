@@ -44,6 +44,12 @@ gem "hosting-hostinger", git: "https://github.com/laquereric/hosting-hostinger.g
 gem "container", git: "https://github.com/laquereric/container-ruby.git"
 gem "container-docker", git: "https://github.com/laquereric/container-docker-ruby.git"
 
+# OpenTelemetry — distributed tracing for request/response flows
+gem "opentelemetry-sdk", "~> 1.4"
+gem "opentelemetry-exporter-otlp", "~> 0.29"
+gem "opentelemetry-instrumentation-rails", "~> 0.34"
+gem "opentelemetry-instrumentation-active_record", "~> 0.8"
+
 # Pagination
 gem "pagy"
 

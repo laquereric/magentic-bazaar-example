@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_260000) do
   create_table "container_runtimes", force: :cascade do |t|
     t.boolean "active", default: true
     t.text "connection_options"
@@ -25,6 +25,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
     t.index ["driver"], name: "index_container_runtimes_on_driver"
     t.index ["name"], name: "index_container_runtimes_on_name"
     t.index ["status"], name: "index_container_runtimes_on_status"
+  end
+
+  create_table "flow_documents", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "document_id", null: false
+    t.text "jsonld_payload"
+    t.string "jsonld_type", null: false
+    t.datetime "matched_at"
+    t.string "otel_trace_id"
+    t.string "status", default: "pending", null: false
+    t.integer "traceable_id"
+    t.string "traceable_type"
+    t.datetime "updated_at", null: false
+    t.index ["document_id"], name: "index_flow_documents_on_document_id", unique: true
+    t.index ["jsonld_type"], name: "index_flow_documents_on_jsonld_type"
+    t.index ["otel_trace_id"], name: "index_flow_documents_on_otel_trace_id"
+    t.index ["status"], name: "index_flow_documents_on_status"
+    t.index ["traceable_type", "traceable_id"], name: "index_flow_documents_on_traceable_type_and_traceable_id", unique: true
   end
 
   create_table "hosting_providers", force: :cascade do |t|
@@ -274,9 +292,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
     t.datetime "created_at", null: false
     t.string "device_type", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
+    t.integer "request_user_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_request_devices_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_request_devices_on_otel_trace_id"
+    t.index ["request_user_id"], name: "index_request_devices_on_request_user_id"
   end
 
   create_table "request_middlewares", force: :cascade do |t|
@@ -284,40 +306,54 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
     t.datetime "created_at", null: false
     t.string "middleware_type", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
     t.integer "position"
+    t.integer "request_service_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_request_middlewares_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_request_middlewares_on_otel_trace_id"
+    t.index ["request_service_id"], name: "index_request_middlewares_on_request_service_id"
   end
 
   create_table "request_providers", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
     t.string "provider_type", null: false
+    t.integer "request_middleware_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_request_providers_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_request_providers_on_otel_trace_id"
+    t.index ["request_middleware_id"], name: "index_request_providers_on_request_middleware_id"
   end
 
   create_table "request_services", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
+    t.integer "request_device_id"
     t.string "service_type", null: false
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_request_services_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_request_services_on_otel_trace_id"
+    t.index ["request_device_id"], name: "index_request_services_on_request_device_id"
   end
 
   create_table "request_users", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.string "user_type", null: false
     t.index ["name"], name: "index_request_users_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_request_users_on_otel_trace_id"
   end
 
   create_table "response_devices", force: :cascade do |t|
@@ -325,9 +361,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
     t.datetime "created_at", null: false
     t.string "device_type", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
+    t.integer "response_service_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_response_devices_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_response_devices_on_otel_trace_id"
+    t.index ["response_service_id"], name: "index_response_devices_on_response_service_id"
   end
 
   create_table "response_middlewares", force: :cascade do |t|
@@ -335,40 +375,56 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
     t.datetime "created_at", null: false
     t.string "middleware_type", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
     t.integer "position"
+    t.integer "response_provider_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_response_middlewares_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_response_middlewares_on_otel_trace_id"
+    t.index ["response_provider_id"], name: "index_response_middlewares_on_response_provider_id"
   end
 
   create_table "response_providers", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
     t.string "provider_type", null: false
+    t.integer "request_provider_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_response_providers_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_response_providers_on_otel_trace_id"
+    t.index ["request_provider_id"], name: "index_response_providers_on_request_provider_id"
   end
 
   create_table "response_services", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
+    t.integer "response_middleware_id"
     t.string "service_type", null: false
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_response_services_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_response_services_on_otel_trace_id"
+    t.index ["response_middleware_id"], name: "index_response_services_on_response_middleware_id"
   end
 
   create_table "response_users", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "otel_trace_id"
+    t.integer "response_device_id"
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
     t.string "user_type", null: false
     t.index ["name"], name: "index_response_users_on_name", unique: true
+    t.index ["otel_trace_id"], name: "index_response_users_on_otel_trace_id"
+    t.index ["response_device_id"], name: "index_response_users_on_response_device_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -511,6 +567,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "flow_documents", "magentic_bazaar_documents", column: "document_id"
   add_foreign_key "llm_engine_llm_model_configurations", "llm_engine_llm_models", column: "llm_model_id"
   add_foreign_key "llm_engine_llm_model_configurations", "llm_engine_llm_providers", column: "llm_provider_id"
   add_foreign_key "llm_engine_llm_models", "llm_engine_llm_vendors", column: "llm_vendor_id"
@@ -525,6 +582,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_230000) do
   add_foreign_key "magentic_bazaar_skill_servers", "magentic_bazaar_mcp_servers", column: "mcp_server_id"
   add_foreign_key "magentic_bazaar_skills", "magentic_bazaar_documents", column: "document_id"
   add_foreign_key "magentic_bazaar_uml_diagrams", "magentic_bazaar_documents", column: "document_id"
+  add_foreign_key "request_devices", "request_users"
+  add_foreign_key "request_middlewares", "request_services"
+  add_foreign_key "request_providers", "request_middlewares"
+  add_foreign_key "request_services", "request_devices"
+  add_foreign_key "response_devices", "response_services"
+  add_foreign_key "response_middlewares", "response_providers"
+  add_foreign_key "response_providers", "request_providers"
+  add_foreign_key "response_services", "response_middlewares"
+  add_foreign_key "response_users", "response_devices"
   add_foreign_key "sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
