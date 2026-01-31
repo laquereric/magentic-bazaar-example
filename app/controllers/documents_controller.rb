@@ -26,13 +26,15 @@ class DocumentsController < ApplicationController
       uml_diagram: @uml_diagram ? serialize_uml_diagram(@uml_diagram) : nil
     }
 
-    compiler = RailsInertiaMdx::Compiler.new
-    if mdx_path
-      compiled = compiler.compile_file(mdx_path)
-      props[:mdx] = compiled.to_inertia_props[:mdx]
-    elsif @document.raw_content.present?
-      compiled = compiler.compile(@document.raw_content)
-      props[:mdx] = compiled.to_inertia_props[:mdx]
+    unless @document.file_type == "PlantUML"
+      compiler = RailsInertiaMdx::Compiler.new
+      if mdx_path
+        compiled = compiler.compile_file(mdx_path)
+        props[:mdx] = compiled.to_inertia_props[:mdx]
+      elsif @document.raw_content.present?
+        compiled = compiler.compile(@document.raw_content)
+        props[:mdx] = compiled.to_inertia_props[:mdx]
+      end
     end
 
     render inertia: "Documents/Show", props: props

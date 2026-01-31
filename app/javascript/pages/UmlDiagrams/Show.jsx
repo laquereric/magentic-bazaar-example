@@ -28,7 +28,7 @@ export default function UmlDiagramsShow({ uml_diagram, document, mdx }) {
   return (
     <>
       <div className="mb-6">
-        <a href="/uml_diagrams" className="text-sm text-indigo-600 hover:text-indigo-900">
+        <a href="/uml" className="text-sm text-indigo-600 hover:text-indigo-900">
           &larr; Back to UML Diagrams
         </a>
       </div>

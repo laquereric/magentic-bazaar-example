@@ -1,0 +1,98 @@
+@startuml Configuration_and_Monitoring_Flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+
+title Configuration and Monitoring Flow\nvia JSON-RPC-LD WebSocket
+
+actor "User" as user
+participant "Device\n(Laptop/Phone)" as device
+participant "WebSocket\nHandler" as ws
+participant "Auth Service" as auth
+participant "Configuration\nService" as config
+participant "Monitoring\nService" as monitor
+database "Database" as db
+
+== Configuration Request ==
+
+user -> device : Configure LLM Provider
+activate device
+
+device -> ws : JSON-RPC-LD Request\n{\n  "jsonrpc": "2.0",\n  "method": "configureLLMProvider",\n  "params": {\n    "@context": {...},\n    "provider": "openai",\n    "apiKey": "encrypted"\n  }\n}
+activate ws
+
+ws -> auth : Validate Token\n& Permissions
+activate auth
+auth --> ws : Authorized
+deactivate auth
+
+ws -> config : Process Configuration
+activate config
+config -> db : Store Config
+activate db
+db --> config : Success
+deactivate db
+config --> ws : Configuration Saved
+deactivate config
+
+ws --> device : JSON-RPC-LD Response\n{\n  "jsonrpc": "2.0",\n  "result": {\n    "@context": {...},\n    "status": "configured",\n    "providerId": "123"\n  }\n}
+deactivate ws
+
+device --> user : Configuration Complete
+deactivate device
+
+== Monitoring Request ==
+
+user -> device : Check Service Status
+activate device
+
+device -> ws : JSON-RPC-LD Request\n{\n  "jsonrpc": "2.0",\n  "method": "getServiceStatus",\n  "params": {\n    "@context": {...},\n    "services": ["llm", "mcp", "skill"]\n  }\n}
+activate ws
+
+ws -> auth : Validate Token
+activate auth
+auth --> ws : Authorized
+deactivate auth
+
+ws -> monitor : Get Status
+activate monitor
+monitor -> db : Query Metrics
+activate db
+db --> monitor : Metrics Data
+deactivate db
+monitor --> ws : Status Report
+deactivate monitor
+
+ws --> device : JSON-RPC-LD Response\n{\n  "jsonrpc": "2.0",\n  "result": {\n    "@context": {...},\n    "services": [\n      {"name": "llm", "status": "healthy"},\n      {"name": "mcp", "status": "healthy"},\n      {"name": "skill", "status": "healthy"}\n    ]\n  }\n}
+deactivate ws
+
+device --> user : Display Status
+deactivate device
+
+== Real-time Monitoring (WebSocket Push) ==
+
+monitor -> ws : Service Event\n(Usage Alert)
+activate monitor
+activate ws
+
+ws -> device : JSON-RPC-LD Notification\n{\n  "jsonrpc": "2.0",\n  "method": "serviceAlert",\n  "params": {\n    "@context": {...},\n    "service": "llm",\n    "alert": "High usage detected"\n  }\n}
+activate device
+
+device -> user : Show Alert
+deactivate device
+deactivate ws
+deactivate monitor
+
+note over device, ws
+  All messages use JSON-RPC-LD format
+  with mandatory @context and
+  SHACL validation
+end note
+
+note over ws, db
+  Magentic Bazaar handles all
+  configuration and monitoring
+  internally - no direct client
+  access to backend services
+end note
+
+@enduml

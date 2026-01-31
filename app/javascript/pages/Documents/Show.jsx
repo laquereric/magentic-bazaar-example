@@ -82,7 +82,7 @@ export default function DocumentsShow({ document, skill, uml_diagram, mdx }) {
             <a href={`/skills/${skill.id}`} className="text-sm text-indigo-600 hover:text-indigo-900">Skill</a>
           )}
           {uml_diagram && (
-            <a href={`/uml_diagrams/${uml_diagram.id}`} className="text-sm text-indigo-600 hover:text-indigo-900">UML</a>
+            <a href={`/uml/${uml_diagram.id}`} className="text-sm text-indigo-600 hover:text-indigo-900">UML</a>
           )}
         </div>
       </div>
